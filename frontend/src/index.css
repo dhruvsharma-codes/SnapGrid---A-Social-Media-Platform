@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+
+  --secondary: #3b82f6;
+  --accent: #ec4899;
+
+  --background: #09090b;
+  --background-secondary: #0f0f12;
+
+  --card: #141419;
+  --card-hover: #1c1c23;
+
+  --input: #18181b;
+
+  --border: #27272a;
+  --border-hover: #3f3f46;
+
+  --text-primary: #f8fafc;
+  --text-heading: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}

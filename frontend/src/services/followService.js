@@ -1,0 +1,44 @@
+import { fetchWithAuth } from "./api.js";
+
+
+// Send follow request
+export const sendFollowRequest = async (userId) => {
+  return await fetchWithAuth(
+    `/follows/request/${userId}`,
+    {
+      method: "POST",
+    }
+  );
+};
+
+
+// Get follow status
+export const getFollowStatus = async (userId) => {
+  return await fetchWithAuth(
+    `/follows/status/${userId}`
+  );
+};
+
+
+// Follow back
+export const followBack = async (requestId) => {
+  return await fetchWithAuth(
+    `/follows/follow-back/${requestId}`,
+    {
+      method: "POST",
+    }
+  );
+};
+
+
+// Reject request
+export const rejectFollowRequest = async (
+  requestId
+) => {
+  return await fetchWithAuth(
+    `/follows/reject/${requestId}`,
+    {
+      method: "POST",
+    }
+  );
+};

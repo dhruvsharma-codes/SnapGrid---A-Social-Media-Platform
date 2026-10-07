@@ -1,0 +1,56 @@
+"use strict";
+
+module.exports = (sequelize, DataTypes) => {
+  const Message = sequelize.define(
+    "Message",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+
+      conversationId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
+      senderId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+
+      isRead: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+    },
+    {
+      tableName: "Messages",
+    },
+  );
+
+  Message.associate = (models) => {
+    Message.belongsTo(models.Conversation, {
+      foreignKey: "conversationId",
+      as: "conversation",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+
+    Message.belongsTo(models.User, {
+      foreignKey: "senderId",
+      as: "sender",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+  };
+
+  return Message;
+};
