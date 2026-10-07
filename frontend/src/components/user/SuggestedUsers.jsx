@@ -6,6 +6,8 @@ import {
 import {
   getSuggestedUsers,
 } from "../../services/userService.js";
+import { sendFollowRequest } from "../../services/followService.js";
+const API_URL = "http://localhost:5000";
 
 const SuggestedUsers = () => {
   const [users, setUsers] =
@@ -13,6 +15,8 @@ const SuggestedUsers = () => {
 
   const [loading, setLoading] =
     useState(true);
+    const [followLoading, setFollowLoading] = useState(null);
+const [followedUsers, setFollowedUsers] = useState([]);
 
   useEffect(() => {
     const loadSuggestions =
@@ -21,9 +25,10 @@ const SuggestedUsers = () => {
           const response =
             await getSuggestedUsers();
 
-          setUsers(
-            response.users || []
-          );
+        //   setUsers(
+        //     response.users || []
+        //   );
+        setUsers(response.data?.users || []);
         } catch (error) {
           console.error(
             "Suggestions Error:",
@@ -36,6 +41,25 @@ const SuggestedUsers = () => {
 
     loadSuggestions();
   }, []);
+
+  const handleFollow = async (userId) => {
+  if (followLoading === userId) return;
+
+  try {
+    setFollowLoading(userId);
+
+    await sendFollowRequest(userId);
+
+    setFollowedUsers((current) => [
+      ...current,
+      userId,
+    ]);
+  } catch (error) {
+    console.error("Follow Error:", error);
+  } finally {
+    setFollowLoading(null);
+  }
+};
 
   if (loading) {
     return (
@@ -72,7 +96,9 @@ const SuggestedUsers = () => {
             {/* Avatar */}
             {user.profileImage ? (
               <img
-                src={user.profileImage}
+                // src={user.profileImage}
+                    src={`${API_URL}${user.profileImage}`}
+
                 alt={user.username}
                 className="h-11 w-11 rounded-full object-cover"
               />
@@ -104,11 +130,23 @@ const SuggestedUsers = () => {
             </div>
 
             {/* Follow */}
-            <button
+            {/* <button
               className="rounded-lg bg-(--primary) px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-(--primary-hover)"
             >
               Follow
-            </button>
+            </button> */}
+            <button
+  type="button"
+  disabled={followLoading === user.id}
+  onClick={() => handleFollow(user.id)}
+  className="rounded-lg bg-(--primary) px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
+>
+  {followLoading === user.id
+    ? "..."
+    : followedUsers.includes(user.id)
+      ? "Requested"
+      : "Follow"}
+</button>
           </div>
         ))}
       </div>

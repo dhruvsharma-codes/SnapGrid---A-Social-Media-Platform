@@ -14,6 +14,9 @@ const followRoutes = require("./routes/followRoutes.js");
 const notificationRoutes = require("./routes/notificationRoutes.js");
 const messageRoutes = require("./routes/messageRoutes.js");
 const groupRoutes = require("./routes/groupRoutes.js");
+const savedPostRoutes = require(
+  "./routes/savedPostRoutes.js"
+);
 const errorMiddleware = require("./middlewares/errorMiddleware.js");
 const socketAuthMiddleware = require("./middlewares/socketAuthMiddleware.js");
 const messageService = require("./services/messageService.js");
@@ -94,6 +97,12 @@ app.use("/api/message", messageRoutes);
 
 // group Route
 app.use("/api/groups", groupRoutes);
+
+// saved Route
+app.use(
+  "/api/posts",
+  savedPostRoutes
+);
 
 // Error Middleware
 app.use(errorMiddleware);

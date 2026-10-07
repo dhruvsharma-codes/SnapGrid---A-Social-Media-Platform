@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const { Post, User, Like, Comment } = require("../models");
+const { Post, User, Like, Comment, SavedPost } = require("../models");
 
 const createPost = async (userId, caption, image) => {
   const user = await User.findByPk(userId);

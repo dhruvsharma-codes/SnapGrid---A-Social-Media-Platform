@@ -38,3 +38,10 @@ export const getFeedPosts = async (page = 1, limit = 10) => {
 export const getUserPosts = async (username) => {
   return await fetchWithAuth(`/posts/user/${username}`);
 };
+
+
+export const deletePost = async (postId) => {
+  return await fetchWithAuth(`/posts/${postId}`, {
+    method: "DELETE",
+  });
+};

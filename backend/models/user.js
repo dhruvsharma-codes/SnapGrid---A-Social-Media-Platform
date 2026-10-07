@@ -181,6 +181,13 @@ User.hasMany(models.GroupMessage, {
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
+
+User.hasMany(models.SavedPost, {
+  foreignKey: "userId",
+  as: "savedPosts",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
   };
   return User;
 };

@@ -1,15 +1,25 @@
 import { useEffect, useState } from "react";
-import { Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle, Send, MoreVertical,
+  Bookmark,
+  Trash2, } from "lucide-react";
+  import { useAuth } from "../context/AuthContext.jsx";
 
-import { getFeedPosts } from "../services/postService.js";
+import { getFeedPosts,deletePost } from "../services/postService.js";
 import { toggleLike } from "../services/likeService.js";
+import {
+  savePost,
+  unsavePost,
+  getSaveStatus,
+} from "../services/savedPostService.js";
 import SuggestedUsers from "../components/user/SuggestedUsers.jsx";
 
 import CommentModal from "../components/post/CommentsModal.jsx";
 
+
 const API_URL = "http://localhost:5000";
 
 const Home = () => {
+   const { user: currentUser } = useAuth();
   const [posts, setPosts] = useState([]);
 
   const [page, setPage] = useState(1);
@@ -19,6 +29,12 @@ const Home = () => {
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [likeLoading, setLikeLoading] = useState(null);
+  const [openMenu, setOpenMenu] = useState(null);
+
+const [saveLoading, setSaveLoading] =
+  useState(null);
+  const [deleteLoading, setDeleteLoading] =
+  useState(null);
 
   // Currently selected post for comment modal
   const [commentPost, setCommentPost] = useState(null);
@@ -94,6 +110,89 @@ const Home = () => {
     }
   };
 
+  // Handle Saved Post
+  const handleSavePost = async (post) => {
+  if (saveLoading === post.id) {
+    return;
+  }
+
+  try {
+    setSaveLoading(post.id);
+
+    if (post.isSaved) {
+      await unsavePost(post.id);
+
+      setPosts((currentPosts) =>
+        currentPosts.map((item) =>
+          item.id === post.id
+            ? {
+                ...item,
+                isSaved: false,
+              }
+            : item
+        )
+      );
+    } else {
+      await savePost(post.id);
+
+      setPosts((currentPosts) =>
+        currentPosts.map((item) =>
+          item.id === post.id
+            ? {
+                ...item,
+                isSaved: true,
+              }
+            : item
+        )
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Save Post Error:",
+      error
+    );
+  } finally {
+    setSaveLoading(null);
+    setOpenMenu(null);
+  }
+};
+
+
+const handleDeletePost = async (postId) => {
+  if (deleteLoading === postId) {
+    return;
+  }
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this post?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    setDeleteLoading(postId);
+
+    await deletePost(postId);
+
+    setPosts((currentPosts) =>
+      currentPosts.filter(
+        (post) => post.id !== postId
+      )
+    );
+
+    setOpenMenu(null);
+  } catch (error) {
+    console.error(
+      "Delete Post Error:",
+      error
+    );
+  } finally {
+    setDeleteLoading(null);
+  }
+};
+
   // =========================
   // COMMENT COUNT CHANGE
   // =========================
@@ -123,9 +222,14 @@ const Home = () => {
   // HOME
   return (
     <>
-<div className="mx-auto grid h-[calc(100vh-80px)] w-full max-w-5xl grid-cols-1 gap-6 lg:grid-cols-[640px_320px]">     {/* <div className="w-full max-w-lg"> */}
+{/* <div className="mx-auto grid h-[calc(100vh-80px)] w-full max-w-5xl grid-cols-1 gap-6 lg:grid-cols-[640px_320px]">    */}
+<div className="mx-auto grid h-[calc(100vh-80px)] w-full max-w-6xl grid-cols-[minmax(0,1fr)_300px] gap-8">
+
      {/* <div className="w-full min-w-0 overflow-y-auto pr-2"> */}
-     <div className="w-full max-w-[580px] overflow-y-auto pr-2">
+     {/* <div className="w-full posts-scroll  max-w-115 overflow-y-auto pr-2"> */}
+       <div className="posts-scroll min-w-0 overflow-y-auto pr-2">
+    <div className="mx-auto w-full max-w-120">
+
         {/* ================= HEADER ================= */}
         <div className="mb-5">
           <p className="mt-1 text-xs text-(--text-secondary)">
@@ -148,10 +252,11 @@ const Home = () => {
                   className="overflow-hidden rounded-lg border border-(--border) bg-(--card)"
                 >
                   {/* ================= USER HEADER ================= */}
-                  <div className="flex items-center gap-3 px-3 py-3">
+                  {/* <div className="flex items-center gap-3 px-3 py-3"> */}
+                  <div className="flex items-center justify-between px-3 py-3">
                     {/* Avatar */}
 
-                    <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-(--primary)">
+                    {/* <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-(--primary)">
                       {post.user?.profileImage ? (
                         <img
                           src={`${API_URL}${post.user.profileImage}`}
@@ -165,11 +270,11 @@ const Home = () => {
                           </span>
                         </div>
                       )}
-                    </div>
+                    </div> */}
 
                     {/* User Info */}
 
-                    <div className="min-w-0">
+                    {/* <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-white">
                         {post.user?.fullName}
                       </p>
@@ -177,7 +282,162 @@ const Home = () => {
                       <p className="truncate text-[11px] text-(--text-secondary)">
                         @{post.user?.username}
                       </p>
-                    </div>
+                    </div> */}
+
+
+                    <div className="flex min-w-0 items-center gap-3">
+
+  <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-(--primary)">
+    {post.user?.profileImage ? (
+      <img
+        src={`${API_URL}${post.user.profileImage}`}
+        alt={post.user.username}
+        className="h-full w-full object-cover"
+      />
+    ) : (
+      <div className="flex h-full w-full items-center justify-center">
+        <span className="text-xs font-semibold text-white">
+          {post.user?.fullName
+            ?.charAt(0)
+            .toUpperCase()}
+        </span>
+      </div>
+    )}
+  </div>
+
+  <div className="min-w-0">
+    <p className="truncate text-sm font-semibold text-white">
+      {post.user?.fullName}
+    </p>
+
+    <p className="truncate text-[11px] text-(--text-secondary)">
+      @{post.user?.username}
+    </p>
+  </div>
+
+</div>
+
+<div className="relative shrink-0">
+
+  <button
+    type="button"
+    onClick={() =>
+      setOpenMenu(
+        openMenu === post.id
+          ? null
+          : post.id
+      )
+    }
+    className="rounded-full p-2 text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-white"
+  >
+    <MoreVertical size={19} />
+  </button>
+
+  {openMenu === post.id && (
+    <div className="absolute right-0 top-10 z-50 w-48 overflow-hidden rounded-xl border border-(--border) bg-(--card) shadow-xl">
+
+      {/* LIKE */}
+      <button
+        type="button"
+        onClick={() => {
+          handleLike(post);
+          setOpenMenu(null);
+        }}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover)"
+      >
+        <Heart
+          size={17}
+          className={
+            post.isLiked
+              ? "fill-red-500 text-red-500"
+              : ""
+          }
+        />
+
+        {post.isLiked
+          ? "Unlike Post"
+          : "Like Post"}
+      </button>
+
+      {/* COMMENT */}
+      <button
+        type="button"
+        onClick={() => {
+          setCommentPost(post);
+          setOpenMenu(null);
+        }}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover)"
+      >
+        <MessageCircle size={17} />
+
+        Comment Post
+      </button>
+
+      {/* SAVE */}
+      <button
+        type="button"
+        disabled={saveLoading === post.id}
+        onClick={() =>
+          handleSavePost(post)
+        }
+        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover) disabled:opacity-50"
+      >
+        <Bookmark
+          size={17}
+          className={
+            post.isSaved
+              ? "fill-white"
+              : ""
+          }
+        />
+
+        {saveLoading === post.id
+          ? "Saving..."
+          : post.isSaved
+            ? "Unsave Post"
+            : "Save Post"}
+      </button>
+
+      {/* DELETE */}
+      {/* Isko sirf owner ke liye show karna */}
+      {/* {Number(post.user?.id) ===
+        Number(currentUser?.id) && (
+        <button
+          type="button"
+          onClick={() => {
+            // delete handler yahan connect karenge
+            setOpenMenu(null);
+          }}
+          className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-red-400 transition hover:bg-red-500/10"
+        >
+          <Trash2 size={17} />
+
+          Delete Post
+        </button>
+      )} */}
+
+      {Number(post.user?.id) ===
+  Number(currentUser?.id) && (
+  <button
+    type="button"
+    disabled={deleteLoading === post.id}
+    onClick={() =>
+      handleDeletePost(post.id)
+    }
+    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-red-400 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    <Trash2 size={17} />
+
+    {deleteLoading === post.id
+      ? "Deleting..."
+      : "Delete Post"}
+  </button>
+)}
+
+    </div>
+  )}
+
+</div>
                   </div>
 
                   {/* ================= POST IMAGE ================= */}
@@ -291,9 +551,13 @@ const Home = () => {
           </>
         )}
       </div>
+      </div>
        {/* ================= SUGGESTED USERS ================= */}
       <aside className="hidden lg:block">
+        <div className="sticky top-6">
+
         <SuggestedUsers />
+        </div>
       </aside>
 
     </div>
