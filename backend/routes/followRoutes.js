@@ -23,4 +23,22 @@ router.post(
   followController.rejectFollowRequest,
 );
 
+router.get(
+  "/followers",
+  authMiddleware,
+  followController.getFollowers
+);
+
+router.get(
+  "/following",
+  authMiddleware,
+  followController.getFollowing
+);
+
+router.delete(
+  "/unfollow/:userId",
+  authMiddleware,
+  followController.unfollowUser
+);
+
 module.exports = router;

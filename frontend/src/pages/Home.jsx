@@ -9,7 +9,6 @@ import { toggleLike } from "../services/likeService.js";
 import {
   savePost,
   unsavePost,
-  getSaveStatus,
 } from "../services/savedPostService.js";
 import SuggestedUsers from "../components/user/SuggestedUsers.jsx";
 

@@ -67,9 +67,66 @@ const rejectFollowRequest = async (req, res, next) => {
   }
 };
 
+
+const getFollowers = async (req, res, next) => {
+  try {
+    const users = await followService.getFollowers(
+      req.user.id
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        users,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+const getFollowing = async (req, res, next) => {
+  try {
+    const users = await followService.getFollowing(
+      req.user.id
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        users,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const unfollowUser = async (req, res, next) => {
+  try {
+    const result =
+      await followService.unfollowUser(
+        req.user.id,
+        req.params.userId
+      );
+
+    return res.status(200).json({
+      success: true,
+      message: "Unfollow successful",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   sendFollowRequest,
   getFollowStatus,
   followBack,
   rejectFollowRequest,
+  getFollowers,
+  getFollowing,
+  unfollowUser
 };

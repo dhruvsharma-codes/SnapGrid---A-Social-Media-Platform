@@ -87,4 +87,109 @@ const login = async ({ email, password }) => {
   };
 };
 
-module.exports = { register, login };
+
+const changePassword = async (
+  userId,
+  currentPassword,
+  newPassword
+) => {
+  userId = Number(userId);
+
+  // ==========================================
+  // VALIDATION
+  // ==========================================
+
+  if (!currentPassword || !newPassword) {
+    const error = new Error(
+      "Current password and new password are required"
+    );
+
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (newPassword.length < 6) {
+    const error = new Error(
+      "New password must be at least 6 characters"
+    );
+
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // ==========================================
+  // FIND USER
+  // ==========================================
+
+  const user = await User.findByPk(userId);
+
+  if (!user) {
+    const error = new Error("User not found");
+
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // ==========================================
+  // CHECK CURRENT PASSWORD
+  // ==========================================
+
+  const isCurrentPasswordValid =
+    await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+
+  if (!isCurrentPasswordValid) {
+    const error = new Error(
+      "Current password is incorrect"
+    );
+
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // ==========================================
+  // CHECK SAME PASSWORD
+  // ==========================================
+
+  const isSamePassword =
+    await bcrypt.compare(
+      newPassword,
+      user.password
+    );
+
+  if (isSamePassword) {
+    const error = new Error(
+      "New password must be different from current password"
+    );
+
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // ==========================================
+  // HASH NEW PASSWORD
+  // ==========================================
+
+  const hashedPassword = await bcrypt.hash(
+    newPassword,
+    12
+  );
+
+  // ==========================================
+  // UPDATE PASSWORD
+  // ==========================================
+
+  user.password = hashedPassword;
+
+  await user.save();
+
+  return {
+    success: true,
+    message: "Password changed successfully",
+  };
+};
+
+
+module.exports = { register, login, changePassword };

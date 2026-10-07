@@ -358,7 +358,110 @@ const getFeedPosts = async (page = 1, limit = 10, userId) => {
 //   );
 // };
 
+// const addLikeData = async (posts, userId) => {
+//   return Promise.all(
+//     posts.map(async (post) => {
+//       const likeCount = await Like.count({
+//         where: {
+//           postId: post.id,
+//         },
+//       });
+
+//       const userLike = await Like.findOne({
+//         where: {
+//           postId: post.id,
+//           userId,
+//         },
+//       });
+
+//       const commentCount = await Comment.count({
+//         where: {
+//           postId: post.id,
+//         },
+//       });
+
+//       const postData = post.toJSON();
+
+//       return {
+//         ...postData,
+//         likeCount,
+//         isLiked: !!userLike,
+//         commentCount,
+//       };
+//     }),
+//   );
+// };
+
+
+// const addLikeData = async (posts, userId) => {
+//   // Get all saved posts of current user
+//   const savedPosts = await SavedPost.findAll({
+//     where: {
+//       userId,
+//     },
+//     attributes: ["postId"],
+//   });
+
+//   const savedPostIds = new Set(
+//     savedPosts.map((savedPost) =>
+//       Number(savedPost.postId)
+//     )
+//   );
+
+//   return Promise.all(
+//     posts.map(async (post) => {
+//       const likeCount = await Like.count({
+//         where: {
+//           postId: post.id,
+//         },
+//       });
+
+//       const userLike = await Like.findOne({
+//         where: {
+//           postId: post.id,
+//           userId,
+//         },
+//       });
+
+//       const commentCount = await Comment.count({
+//         where: {
+//           postId: post.id,
+//         },
+//       });
+
+//       const postData = post.toJSON();
+
+//       return {
+//         ...postData,
+
+//         likeCount,
+//         isLiked: !!userLike,
+//         commentCount,
+
+//         // ⭐ Important
+//         isSaved: savedPostIds.has(
+//           Number(post.id)
+//         ),
+//       };
+//     })
+//   );
+// };
+
+
 const addLikeData = async (posts, userId) => {
+  const savedPosts = await SavedPost.findAll({
+    where: {
+      userId,
+    },
+    attributes: ["postId"],
+  });
+
+  const savedPostIds = new Set(
+    savedPosts.map((savedPost) =>
+      Number(savedPost.postId)
+    )
+  );
+
   return Promise.all(
     posts.map(async (post) => {
       const likeCount = await Like.count({
@@ -387,8 +490,11 @@ const addLikeData = async (posts, userId) => {
         likeCount,
         isLiked: !!userLike,
         commentCount,
+        isSaved: savedPostIds.has(
+          Number(post.id)
+        ),
       };
-    }),
+    })
   );
 };
 

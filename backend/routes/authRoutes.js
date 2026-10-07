@@ -19,4 +19,10 @@ router.get("/getMe", authMiddleware, authController.getMe);
 //   googleLogin
 // );
 
+router.put(
+  "/change-password",
+  authMiddleware,
+  authController.changePassword
+);
+
 module.exports = router;

@@ -42,3 +42,26 @@ export const rejectFollowRequest = async (
     }
   );
 };
+
+
+// Get followers
+export const getFollowers = async () => {
+  return await fetchWithAuth("/follows/followers");
+};
+
+
+// Get following
+export const getFollowing = async () => {
+  return await fetchWithAuth("/follows/following");
+};
+
+
+// Unfollow user
+export const unfollowUser = async (userId) => {
+  return await fetchWithAuth(
+    `/follows/unfollow/${userId}`,
+    {
+      method: "DELETE",
+    }
+  );
+};

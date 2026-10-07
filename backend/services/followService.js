@@ -1104,6 +1104,130 @@ const rejectFollowRequest = async (
 
 
 // ======================================================
+// GET FOLLOWERS
+// ======================================================
+
+const getFollowers = async (userId) => {
+  userId = Number(userId);
+
+  const followers = await Follow.findAll({
+    where: {
+      followingId: userId,
+    },
+    include: [
+      {
+        model: User,
+        as: "follower",
+        attributes: [
+          "id",
+          "username",
+          "fullName",
+          "profileImage",
+          "bio",
+          "followersCount",
+          "followingCount",
+        ],
+      },
+    ],
+    order: [["createdAt", "DESC"]],
+  });
+
+  return followers.map((follow) => follow.follower);
+};
+
+
+// ======================================================
+// GET FOLLOWING
+// ======================================================
+
+const getFollowing = async (userId) => {
+  userId = Number(userId);
+
+  const following = await Follow.findAll({
+    where: {
+      followerId: userId,
+    },
+    include: [
+      {
+        model: User,
+        as: "following",
+        attributes: [
+          "id",
+          "username",
+          "fullName",
+          "profileImage",
+          "bio",
+          "followersCount",
+          "followingCount",
+        ],
+      },
+    ],
+    order: [["createdAt", "DESC"]],
+  });
+
+  return following.map((follow) => follow.following);
+};
+
+
+// ======================================================
+// UNFOLLOW USER
+// ======================================================
+
+const unfollowUser = async (currentUserId, targetUserId) => {
+  currentUserId = Number(currentUserId);
+  targetUserId = Number(targetUserId);
+
+  if (currentUserId === targetUserId) {
+    const error = new Error(
+      "You cannot unfollow yourself"
+    );
+
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const follow = await Follow.findOne({
+    where: {
+      followerId: currentUserId,
+      followingId: targetUserId,
+    },
+  });
+
+  if (!follow) {
+    const error = new Error(
+      "You are not following this user"
+    );
+
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await follow.destroy();
+
+  // Sync current user's counts
+  const currentUserCounts =
+    await syncUserCounts(currentUserId);
+
+  // Sync target user's counts
+  const targetUserCounts =
+    await syncUserCounts(targetUserId);
+
+  return {
+    status: "unfollowed",
+
+    currentUser: {
+      id: currentUserId,
+      ...currentUserCounts,
+    },
+
+    targetUser: {
+      id: targetUserId,
+      ...targetUserCounts,
+    },
+  };
+};
+
+// ======================================================
 // EXPORT
 // ======================================================
 
@@ -1112,4 +1236,7 @@ module.exports = {
   getFollowStatus,
   followBack,
   rejectFollowRequest,
+  getFollowers,
+  getFollowing,
+  unfollowUser
 };

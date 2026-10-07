@@ -1,6 +1,15 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext.jsx";
+import {
+  savePost,
+  unsavePost,
+} from "../../services/savedPostService.js";
+import { deletePost } from "../../services/postService.js";
 
-import { X, Heart, MessageCircle, Send } from "lucide-react";
+import { X, Heart, MessageCircle, Send, MoreVertical,
+  Bookmark,
+  Trash2, } from "lucide-react";
+
 
 import { toggleLike } from "../../services/likeService.js";
 
@@ -8,7 +17,9 @@ import CommentsModal from "../post/CommentsModal.jsx";
 
 const API_URL = "http://localhost:5000";
 
-const PostModal = ({ post, onClose, onLikeUpdated, onCommentUpdated }) => {
+const PostModal = ({ post, onClose, onLikeUpdated, onCommentUpdated, onPostDeleted, onPostUnsave, }) => {
+  const { user: currentUser } = useAuth();
+
   const [liked, setLiked] = useState(post?.isLiked || false);
 
   const [likeCount, setLikeCount] = useState(post?.likeCount || 0);
@@ -16,6 +27,18 @@ const PostModal = ({ post, onClose, onLikeUpdated, onCommentUpdated }) => {
   const [likeLoading, setLikeLoading] = useState(false);
 
   const [showComments, setShowComments] = useState(false);
+  const [isSaved, setIsSaved] = useState(
+  post?.isSaved || false
+);
+
+const [saveLoading, setSaveLoading] =
+  useState(false);
+
+const [deleteLoading, setDeleteLoading] =
+  useState(false);
+
+const [showMenu, setShowMenu] =
+  useState(false);
 
   if (!post) return null;
 
@@ -49,6 +72,90 @@ const PostModal = ({ post, onClose, onLikeUpdated, onCommentUpdated }) => {
     }
   };
 
+//   const handleSave = async () => {
+//   if (saveLoading) return;
+
+//   try {
+//     setSaveLoading(true);
+
+//     if (isSaved) {
+//       await unsavePost(post.id);
+//       setIsSaved(false);
+//     } else {
+//       await savePost(post.id);
+//       setIsSaved(true);
+//     }
+
+//     setShowMenu(false);
+//   } catch (error) {
+//     console.error("Save Post Error:", error);
+//   } finally {
+//     setSaveLoading(false);
+//   }
+// };
+
+
+const handleSave = async () => {
+  if (saveLoading) return;
+
+  try {
+    setSaveLoading(true);
+
+    if (isSaved) {
+      await unsavePost(post.id);
+
+      setIsSaved(false);
+
+      // Saved tab ko immediately update karo
+      if (onPostUnsave) {
+        onPostUnsave(post.id);
+      }
+    } else {
+      await savePost(post.id);
+
+      setIsSaved(true);
+    }
+
+    setShowMenu(false);
+  } catch (error) {
+    console.error("Save Post Error:", error);
+  } finally {
+    setSaveLoading(false);
+  }
+};
+
+const handleDelete = async () => {
+  if (deleteLoading) return;
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this post?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setDeleteLoading(true);
+
+    await deletePost(post.id);
+    if (onPostDeleted) {
+  onPostDeleted(post.id);
+}
+
+
+setShowMenu(false);
+onClose();
+
+    onClose();
+  } catch (error) {
+    console.error(
+      "Delete Post Error:",
+      error
+    );
+  } finally {
+    setDeleteLoading(false);
+  }
+};
+
   const handleCommentAdded = ({ postId, commentCount }) => {
     if (onCommentUpdated) {
       onCommentUpdated({
@@ -77,13 +184,123 @@ const PostModal = ({ post, onClose, onLikeUpdated, onCommentUpdated }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
-        <button
+        {/* <button
           type="button"
           onClick={onClose}
           className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black"
         >
           <X size={20} />
+        </button> */}
+
+        <div className="absolute right-3 top-3 z-20 flex items-center gap-2">
+
+  {/* 3 DOT */}
+  <div className="relative">
+
+    <button
+      type="button"
+      onClick={() =>
+        setShowMenu((current) => !current)
+      }
+      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black"
+    >
+      <MoreVertical size={20} />
+    </button>
+
+    {showMenu && (
+      <div className="absolute right-0 top-11 z-50 w-48 overflow-hidden rounded-xl border border-(--border) bg-(--card) shadow-xl">
+
+        {/* LIKE */}
+        <button
+          type="button"
+          onClick={() => {
+            handleLike();
+            setShowMenu(false);
+          }}
+          disabled={likeLoading}
+          className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover)"
+        >
+          <Heart
+            size={17}
+            className={
+              liked
+                ? "fill-red-500 text-red-500"
+                : ""
+            }
+          />
+
+          {liked
+            ? "Unlike Post"
+            : "Like Post"}
         </button>
+
+        {/* COMMENT */}
+        <button
+          type="button"
+          onClick={() => {
+            setShowComments(true);
+            setShowMenu(false);
+          }}
+          className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover)"
+        >
+          <MessageCircle size={17} />
+
+          Comment Post
+        </button>
+
+        {/* SAVE */}
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saveLoading}
+          className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover) disabled:opacity-50"
+        >
+          <Bookmark
+            size={17}
+            className={
+              isSaved
+                ? "fill-white"
+                : ""
+            }
+          />
+
+          {saveLoading
+            ? "Saving..."
+            : isSaved
+              ? "Unsave Post"
+              : "Save Post"}
+        </button>
+
+        {/* DELETE */}
+        {Number(post.user?.id) ===
+          Number(currentUser?.id) && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleteLoading}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
+          >
+            <Trash2 size={17} />
+
+            {deleteLoading
+              ? "Deleting..."
+              : "Delete Post"}
+          </button>
+        )}
+      </div>
+    )}
+  </div>
+
+  {/* CLOSE */}
+  <button
+    type="button"
+    onClick={onClose}
+    className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black"
+  >
+    <X size={20} />
+  </button>
+
+</div>
 
         {/* User */}
         <div className="flex items-center gap-3 border-b border-(--border) px-5 py-4">

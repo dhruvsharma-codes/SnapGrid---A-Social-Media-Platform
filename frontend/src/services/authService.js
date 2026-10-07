@@ -35,3 +35,21 @@ export const loginUser = async (loginData) => {
 export const currentUser = async () => {
   return await fetchWithAuth("/auth/getMe");
 };
+
+
+
+export const changePassword = async ({
+  currentPassword,
+  newPassword,
+}) => {
+  return await fetchWithAuth(
+    "/auth/change-password",
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
+    }
+  );
+};

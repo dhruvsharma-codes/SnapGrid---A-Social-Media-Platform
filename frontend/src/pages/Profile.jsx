@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getUserProfile } from "../services/userService.js";
 import { getUserPosts } from "../services/postService.js";
+import { getSavedPosts } from "../services/savedPostService.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import UserCard from "../components/user/UserCard.jsx";
 import UserStats from "../components/user/UserStats.jsx";
@@ -24,6 +25,11 @@ const Profile = () => {
   const [postsLoading, setPostsLoading] = useState(true);
 
   const [selectedPost, setSelectedPost] = useState(null);
+  const [activeTab, setActiveTab] = useState("posts");
+
+const [savedPosts, setSavedPosts] = useState([]);
+
+const [savedLoading, setSavedLoading] = useState(false);
 
   const [showEditProfile, setShowEditProfile] = useState(false);
 
@@ -56,6 +62,57 @@ const Profile = () => {
 
     fetchProfileData();
   }, [username]);
+
+
+
+//   const loadSavedPosts = async () => {
+//   try {
+//     setSavedLoading(true);
+
+//     const response = await getSavedPosts();
+
+//     setSavedPosts(
+//       response.data?.posts || []
+//     );
+//   } catch (error) {
+//     console.error(
+//       "Saved Posts Error:",
+//       error
+//     );
+//   } finally {
+//     setSavedLoading(false);
+//   }
+// };
+
+const loadSavedPosts = async () => {
+  try {
+    setSavedLoading(true);
+
+    const response = await getSavedPosts();
+
+    setSavedPosts(
+      response.data?.posts || []
+    );
+  } catch (error) {
+    console.error(
+      "Saved Posts Error:",
+      error
+    );
+  } finally {
+    setSavedLoading(false);
+  }
+};
+
+const handleTabChange = (tab) => {
+  setActiveTab(tab);
+
+  if (
+    tab === "saved" &&
+    savedPosts.length === 0
+  ) {
+    loadSavedPosts();
+  }
+};
 
   const handleProfileUpdated = (updatedUser) => {
     setUser(updatedUser);
@@ -176,10 +233,13 @@ const Profile = () => {
       </div>
 
       {/* Tabs */}
-      <ProfileTabs isOwnProfile={isOwnProfile} />
+      <ProfileTabs isOwnProfile={isOwnProfile}
+      activeTab={activeTab}
+  onTabChange={handleTabChange}
+      />
 
       {/* Posts */}
-      {postsLoading ? (
+      {/* {postsLoading ? (
         <div className="flex min-h-60 items-center justify-center">
           <p className="text-(--text-secondary)">Loading posts...</p>
         </div>
@@ -188,16 +248,106 @@ const Profile = () => {
           posts={posts}
           onPostClick={(post) => setSelectedPost(post)}
         />
-      )}
+      )} */}
+
+      {activeTab === "posts" ? (
+  postsLoading ? (
+    <div className="flex min-h-60 items-center justify-center">
+      <p className="text-(--text-secondary)">
+        Loading posts...
+      </p>
+    </div>
+  ) : (
+    <ProfilePostGrid
+      posts={posts}
+      onPostClick={(post) =>
+        setSelectedPost(post)
+      }
+    />
+  )
+) : (
+  savedLoading ? (
+    <div className="flex min-h-60 items-center justify-center">
+      <p className="text-(--text-secondary)">
+        Loading saved posts...
+      </p>
+    </div>
+  ) : (
+    // <ProfilePostGrid
+    //   posts={savedPosts.map(
+    //     (item) => item.post
+    //   )}
+    //   onPostClick={(post) =>
+    //     setSelectedPost(post)
+    //   }
+    // />
+    <ProfilePostGrid
+  posts={savedPosts
+    .filter((item) => item.post)
+    .map((item) => ({
+      ...item.post,
+      isSaved: true,
+    }))}
+  onPostClick={(post) =>
+    setSelectedPost(post)
+  }
+/>
+  )
+)}
 
       {/* Post Modal */}
       {selectedPost && (
-        <PostModal
-          post={selectedPost}
-          onClose={() => setSelectedPost(null)}
-          onLikeUpdated={handleLikeUpdated}
-          onCommentUpdated={handleCommentUpdated}
-        />
+  //       <PostModal
+  //         post={selectedPost}
+  //         onClose={() => setSelectedPost(null)}
+  //         onLikeUpdated={handleLikeUpdated}
+  //         onCommentUpdated={handleCommentUpdated}
+  //         onPostDeleted={(postId) => {
+  //   setPosts((currentPosts) =>
+  //     currentPosts.filter(
+  //       (post) => post.id !== postId
+  //     )
+  //   );
+  //    setSavedPosts((currentSavedPosts) =>
+  //     currentSavedPosts.filter(
+  //       (item) =>
+  //         item.post?.id !== postId
+  //     )
+  //   );
+  // }}
+  //       />
+
+  <PostModal
+  post={selectedPost}
+  onClose={() => setSelectedPost(null)}
+  onLikeUpdated={handleLikeUpdated}
+  onCommentUpdated={handleCommentUpdated}
+
+  onPostDeleted={(postId) => {
+    setPosts((currentPosts) =>
+      currentPosts.filter(
+        (post) => post.id !== postId
+      )
+    );
+
+    setSavedPosts((currentSavedPosts) =>
+      currentSavedPosts.filter(
+        (item) => item.post?.id !== postId
+      )
+    );
+  }}
+
+  onPostUnsave={(postId) => {
+    setSavedPosts((currentSavedPosts) =>
+      currentSavedPosts.filter(
+        (item) => item.post?.id !== postId
+      )
+    );
+
+    // Saved tab se Unsave hone ke baad modal close
+    setSelectedPost(null);
+  }}
+/>
       )}
 
       {/* Edit Profile */}

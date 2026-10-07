@@ -77,8 +77,14 @@ app.use("/api/auth", authRoutes);
 // User Route
 app.use("/api/users", userRoutes);
 
+// saved Route
+app.use(
+  "/api/posts",
+  savedPostRoutes
+);
 // Post Route
 app.use("/api/posts", postRoutes);
+
 
 // Like Route
 app.use("/api/likes", likeRoutes);
@@ -98,11 +104,7 @@ app.use("/api/message", messageRoutes);
 // group Route
 app.use("/api/groups", groupRoutes);
 
-// saved Route
-app.use(
-  "/api/posts",
-  savedPostRoutes
-);
+
 
 // Error Middleware
 app.use(errorMiddleware);
