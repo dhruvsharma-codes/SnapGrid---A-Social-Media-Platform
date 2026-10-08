@@ -256,14 +256,24 @@ const fileInputRef = useRef(null);
       return;
     }
 
+    // const socket = io(
+    //   SOCKET_URL,
+    //   {
+    //     auth: {
+    //       token,
+    //     },
+    //   }
+    // );
+    
     const socket = io(
-      SOCKET_URL,
-      {
-        auth: {
-          token,
-        },
-      }
-    );
+  import.meta.env.VITE_API_URL,
+  {
+    auth: {
+      token,
+    },
+    withCredentials: true,
+  }
+);
 
     socketRef.current = socket;
 
