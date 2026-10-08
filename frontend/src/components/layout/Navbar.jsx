@@ -211,7 +211,8 @@ useEffect(() => {
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 h-16 border-b border-(--border) bg-(--background-secondary)/95 backdrop-blur-md">
 
-      <div className="flex h-full items-center justify-between px-6">
+      {/* <div className="flex h-full items-center justify-between px-6"> */}
+      <div className="flex h-full items-center justify-between gap-2 px-3 sm:px-4 md:px-6">
 
         {/* Logo */}
         <Link
@@ -223,15 +224,19 @@ useEffect(() => {
               S
             </span>
           </div>
-
+{/* 
           <span className="text-xl font-bold text-white">
             SnapGrid
-          </span>
+          </span> */}
+          <span className="hidden text-xl font-bold text-white sm:block">
+  SnapGrid
+</span>
         </Link>
 
 
         {/* Mobile Search */}
-        <div className="relative flex w-48 sm:w-64 md:hidden">
+        {/* <div className="relative flex w-48 sm:w-64 md:hidden"> */}
+        <div className="relative hidden w-64 md:flex">
 
           <div className="flex w-full items-center gap-2 rounded-xl border border-(--border) bg-(--input) px-3 py-2">
 
@@ -346,20 +351,40 @@ useEffect(() => {
 
 
           {/* Messages */}
-          <Link
+          {/* <Link
             to="/messages"
             className="rounded-xl p-2.5 text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-white"
           >
             <MessageCircle size={21} />
-          </Link>
+          </Link> */}
+          <Link
+  to="/messages"
+  className="
+    hidden
+    rounded-xl
+    p-2.5
+    text-(--text-secondary)
+    transition
+    hover:bg-(--card-hover)
+    hover:text-white
+
+    sm:flex
+  "
+>
+  <MessageCircle size={21} />
+</Link>
 
 
           {/* Profile */}
           {user && (
-            <Link
-              to={`/profile/${user.username}`}
-              className="ml-2"
-            >
+            // <Link
+            //   to={`/profile/${user.username}`}
+            //   className="ml-2"
+            // >
+             <Link
+    to={`/profile/${user.username}`}
+    className="ml-2 hidden sm:block"
+  >
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-(--primary)">
                 <span className="text-sm font-semibold text-white">
                   {getInitials(
