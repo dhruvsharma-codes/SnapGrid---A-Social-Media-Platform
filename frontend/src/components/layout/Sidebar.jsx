@@ -800,6 +800,11 @@ const Sidebar = ({
       path: "/",
       icon: Home,
     },
+      {
+    name: "Search",
+    path: "/search",
+    icon: Search,
+  },
     {
       name: "Reels",
       path: "/explore",
