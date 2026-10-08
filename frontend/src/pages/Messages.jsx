@@ -32,7 +32,7 @@ import CreateGroupModal from "../components/chat/CreateGroupModal.jsx";
 import GroupMembersPanel from "../components/chat/GroupMembersPanel.jsx";
 
 import { useSocket } from "../context/SocketContext.jsx";
-const SOCKET_URL = "http://localhost:5000";
+// const SOCKET_URL = "http://localhost:5000";
 
 const Messages = () => {
   // =========================================================
@@ -229,7 +229,8 @@ const fileInputRef = useRef(null);
       return profileImage;
     }
 
-    return `http://localhost:5000${profileImage}`;
+    // return `http://localhost:5000${profileImage}`;
+    return `${import.meta.env.VITE_API_URL}${profileImage}`;
   };
 
   // =========================================================
@@ -1744,7 +1745,8 @@ console.log(
   {message.messageType === "image" &&
     message.attachmentUrl && (
       <img
-        src={`http://localhost:5000${message.attachmentUrl}`}
+        // src={`http://localhost:5000${message.attachmentUrl}`}
+        src={`${import.meta.env.VITE_API_URL}${message.attachmentUrl}`}
         alt={
           message.attachmentName ||
           "Attached image"
@@ -1757,7 +1759,8 @@ console.log(
   {message.messageType === "file" &&
     message.attachmentUrl && (
       <a
-        href={`http://localhost:5000${message.attachmentUrl}`}
+        // href={`http://localhost:5000${message.attachmentUrl}`}
+        href={`${import.meta.env.VITE_API_URL}${message.attachmentUrl}`}
         target="_blank"
         rel="noopener noreferrer"
         className="flex min-w-60 items-center gap-3 rounded-xl border border-(--border) bg-(--background-secondary) p-3 transition hover:bg-(--card-hover)"
