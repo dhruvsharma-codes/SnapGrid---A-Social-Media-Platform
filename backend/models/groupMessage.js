@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      tableName: "GroupMessages",
+      tableName: "groupmessages",
     }
   );
 
