@@ -98,6 +98,7 @@
 import {
   MoreHorizontal,
   Edit3,
+  Settings
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -180,6 +181,8 @@ const UserCard = ({
 
           {/* Own Profile */}
           {isOwnProfile ? (
+              <div className="flex items-center gap-2">
+
             <button
               type="button"
               onClick={onEditProfile}
@@ -210,6 +213,35 @@ const UserCard = ({
 
               <span>Edit Profile</span>
             </button>
+            {/* Settings */}
+    <button
+      type="button"
+      onClick={() => navigate("/settings")}
+      className="
+        flex
+        h-10
+        w-10
+        shrink-0
+        items-center
+        justify-center
+        rounded-lg
+        border
+        border-(--border)
+        bg-(--card)
+        text-(--text-secondary)
+        transition
+        hover:bg-(--card-hover)
+        hover:text-white
+      "
+      title="Settings"
+      aria-label="Settings"
+    >
+      <Settings
+        size={18}
+        className="shrink-0"
+      />
+    </button>
+    </div>
           ) : (
             <>
               <FollowButton
