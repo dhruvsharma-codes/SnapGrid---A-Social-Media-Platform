@@ -241,8 +241,9 @@ const Notifications = () => {
 
   // PAGE
   return (
-    <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold text-white">
+    // <div className="mx-auto max-w-2xl">
+    <div className="mx-auto w-full max-w-2xl">
+      <h1 className="sm:mb-6 sm:text-2xl font-bold text-white mb-4 text-xl">
         Notifications
       </h1>
 
@@ -268,7 +269,8 @@ const Notifications = () => {
                       notification
                     )
                   }
-                  className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition ${
+                  // className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition ${
+                  className={`flex cursor-pointer flex-col gap-3 rounded-xl border p-3 transition sm:flex-row sm:items-center sm:gap-4 sm:p-4 ${
                     notification.isRead
                       ? "border-(--border) bg-(--card)"
                       : "border-(--primary) bg-(--card-hover)"
@@ -276,7 +278,8 @@ const Notifications = () => {
                 >
                   {/* Avatar */}
 
-                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-(--primary)">
+                  {/* <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-(--primary)"> */}
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-(--primary) sm:h-11 sm:w-11">
                     {notification.sender
                       ?.profileImage ? (
                       <img
@@ -301,7 +304,7 @@ const Notifications = () => {
                   {/* Text */}
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-white">
+                    <p className="text-sm text-white leading-5 wrap-break-word">
                       <span className="font-semibold">
                         {
                           notification.sender
@@ -323,7 +326,7 @@ const Notifications = () => {
                   {notification.type ===
                     "follow_request" && (
                     <div
-                      className="flex shrink-0 items-center gap-2"
+                      className="flex shrink-0 items-center gap-2 w-full sm:w-auto"
                       onClick={(event) =>
                         event.stopPropagation()
                       }
@@ -338,7 +341,7 @@ const Notifications = () => {
                             notification
                           )
                         }
-                        className="rounded-lg bg-(--primary) px-4 py-2 text-sm font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
+                        className=" flex-1 rounded-lg bg-(--primary) px-3 py-2 text-xs font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-4 sm:text-sm"
                       >
                         {isActionLoading
                           ? "..."
@@ -355,7 +358,7 @@ const Notifications = () => {
                             notification
                           )
                         }
-                        className="flex h-9 w-9 items-center justify-center rounded-lg border border-(--border) text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-(--border) text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                         title="Reject request"
                       >
                         <X size={18} />

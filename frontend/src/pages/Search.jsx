@@ -45,9 +45,20 @@ const Search = () => {
   };
 
   return (
-    <div className="mx-auto max-w-2xl">
+    // <div className="mx-auto max-w-2xl">
+    <div className="mx-auto w-full max-w-2xl">
       {/* Search Bar */}
-      <div className="flex items-center gap-3 rounded-xl border border-(--border) bg-(--input) px-4 py-3 focus-within:border-(--primary)">
+      <div className="flex items-center gap-3 rounded-xl border border-(--border) bg-(--input) px-4 py-3 sm:px-4 focus-within:border-(--primary)">
+       {/* <div className="
+  flex w-full items-center gap-3
+  border-b border-(--border)
+  p-3 sm:p-4
+  text-left
+  transition
+  last:border-b-0
+  hover:bg-(--card-hover)
+"> */}
+      
         <SearchIcon size={20} className="shrink-0 text-(--text-muted)" />
 
         <input
@@ -56,11 +67,11 @@ const Search = () => {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search SnapGrid"
           autoFocus
-          className="w-full bg-transparent text-sm text-white outline-none placeholder:text-(--text-muted)"
+          className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-(--text-muted)"
         />
 
         {loading && (
-          <span className="text-xs text-(--text-muted)">Searching...</span>
+          <span className=" shrink-0 text-xs text-(--text-muted)">Searching...</span>
         )}
       </div>
 
@@ -76,7 +87,8 @@ const Search = () => {
                   className="flex w-full items-center gap-3 border-b border-(--border) p-4 text-left transition last:border-b-0 hover:bg-(--card-hover)"
                 >
                   {/* Profile Image / Initial */}
-                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-(--primary)">
+                  {/* <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-(--primary)"> */}
+                  <div className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 overflow-hidden rounded-full bg-(--primary)">
                     {user.profileImage ? (
                       <img
                         src={`${API_URL}${user.profileImage}`}
@@ -93,7 +105,7 @@ const Search = () => {
                   </div>
 
                   {/* User Info */}
-                  <div className="min-w-0">
+                  {/* <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-white">
                       {user.fullName}
                     </p>
@@ -101,7 +113,16 @@ const Search = () => {
                     <p className="truncate text-sm text-(--text-secondary)">
                       @{user.username}
                     </p>
-                  </div>
+                  </div> */}
+                  <div className="min-w-0 flex-1">
+  <p className="truncate text-sm font-semibold text-white">
+    {user.fullName}
+  </p>
+
+  <p className="truncate text-xs sm:text-sm text-(--text-secondary)">
+    @{user.username}
+  </p>
+</div>
                 </button>
               ))
             : !loading && (
