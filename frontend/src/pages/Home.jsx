@@ -15,7 +15,8 @@ import SuggestedUsers from "../components/user/SuggestedUsers.jsx";
 import CommentModal from "../components/post/CommentsModal.jsx";
 
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Home = () => {
    const { user: currentUser } = useAuth();

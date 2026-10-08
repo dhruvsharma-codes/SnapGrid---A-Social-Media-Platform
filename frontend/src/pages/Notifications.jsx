@@ -12,7 +12,8 @@ import {
 } from "../services/followService.js";
 import { useSocket } from "../context/SocketContext.jsx";
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);

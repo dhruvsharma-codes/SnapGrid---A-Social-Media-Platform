@@ -197,7 +197,8 @@ const handleTabChange = (tab) => {
       <div className="relative h-64 overflow-hidden cursor-pointer rounded-b-2xl bg-(--card) md:h-72">
         {user.coverImage ? (
           <img
-            src={`http://localhost:5000${user.coverImage}`}
+            // src={`http://localhost:5000${user.coverImage}`}
+            src={`${import.meta.env.VITE_API_URL}${user.coverImage}`}
             alt="Cover"
             className="h-full w-full object-cover"
           />

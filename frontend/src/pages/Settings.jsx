@@ -614,7 +614,8 @@ const renderFollowersFollowing = () => {
                     src={
                       user.profileImage.startsWith("http")
                         ? user.profileImage
-                        : `http://localhost:5000${user.profileImage}`
+                        // : `http://localhost:5000${user.profileImage}`
+                        : `${import.meta.env.VITE_API_URL}${user.profileImage}`
                     }
                     alt={user.username}
                     className="h-12 w-12 rounded-full object-cover"
@@ -738,7 +739,8 @@ const renderProfileDetails = () => {
               src={
                 profile.coverImage.startsWith("http")
                   ? profile.coverImage
-                  : `http://localhost:5000${profile.coverImage}`
+                  // : `http://localhost:5000${profile.coverImage}`
+                  : `${import.meta.env.VITE_API_URL}${profile.coverImage}`
               }
               alt="Cover"
               className="h-full w-full object-cover"
@@ -754,7 +756,8 @@ const renderProfileDetails = () => {
                 src={
                   profile.profileImage.startsWith("http")
                     ? profile.profileImage
-                    : `http://localhost:5000${profile.profileImage}`
+                    // : `http://localhost:5000${profile.profileImage}`
+                    : `${import.meta.env.VITE_API_URL}${profile.profileImage}`
                 }
                 alt={profile.username}
                 className="h-24 w-24 rounded-full border-4 border-(--card) object-cover"
@@ -1052,7 +1055,8 @@ const renderProfileDetails = () => {
             <div className="h-16 w-16 overflow-hidden rounded-full bg-(--primary)">
               {profile.profileImage ? (
                 <img
-                  src={`http://localhost:5000${profile.profileImage}`}
+                  // src={`http://localhost:5000${profile.profileImage}`}
+                  src={`${import.meta.env.VITE_API_URL}${profile.profileImage}`}
                   alt={profile.username}
                   className="h-full w-full object-cover"
                 />
