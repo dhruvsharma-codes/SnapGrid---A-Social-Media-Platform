@@ -171,16 +171,17 @@ const handleTabChange = (tab) => {
 
   if (loading) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center">
-        <p className="text-(--text-secondary)">Loading profile...</p>
+      <div className="flex sm:min-h-[calc(100vh-64px)] items-center justify-center px-4  min-h-[calc(100vh-128px)]">
+        <p className="text-(--text-secondary) text-sm sm:text-base">Loading profile...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center">
-        <p className="text-(--danger)">{error}</p>
+      // <div className="flex min-h-[calc(100vh-64px)] items-center justify-center">
+      <div className="flex min-h-[calc(100vh-128px)] items-center justify-center px-4 sm:min-h-[calc(100vh-64px)]">
+        <p className="text-(--danger) text-sm sm:text-base">{error}</p>
       </div>
     );
   }
@@ -192,9 +193,21 @@ const handleTabChange = (tab) => {
   const isOwnProfile = loggedInUser?.username === user.username;
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       {/* Cover */}
-      <div className="relative h-64 overflow-hidden cursor-pointer rounded-b-2xl bg-(--card) md:h-72">
+      {/* <div className="relative h-64 overflow-hidden cursor-pointer rounded-b-2xl bg-(--card) md:h-72"> */}
+      <div
+  className="
+    relative
+    h-40
+    overflow-hidden
+    rounded-b-2xl
+    bg-(--card)
+    sm:h-52
+    md:h-64
+    lg:h-72
+  "
+>
         {user.coverImage ? (
           <img
             // src={`http://localhost:5000${user.coverImage}`}
@@ -208,7 +221,7 @@ const handleTabChange = (tab) => {
       </div>
 
       {/* Profile Info */}
-      <div className="px-4 md:px-8">
+      <div className="px-3 sm:px-5 md:px-8">
         {/* <UserCard
           user={user}
           isOwnProfile={isOwnProfile}
@@ -234,10 +247,12 @@ const handleTabChange = (tab) => {
       </div>
 
       {/* Tabs */}
+      <div className="mt-2 w-full overflow-x-auto">
       <ProfileTabs isOwnProfile={isOwnProfile}
       activeTab={activeTab}
-  onTabChange={handleTabChange}
+      onTabChange={handleTabChange}
       />
+      </div>
 
       {/* Posts */}
       {/* {postsLoading ? (
@@ -251,10 +266,13 @@ const handleTabChange = (tab) => {
         />
       )} */}
 
+<div className="mt-1 w-full">
+
+
       {activeTab === "posts" ? (
   postsLoading ? (
-    <div className="flex min-h-60 items-center justify-center">
-      <p className="text-(--text-secondary)">
+    <div className="flex min-h-60 items-center justify-center px-4">
+      <p className="text-(--text-secondary) text-sm sm:text-base">
         Loading posts...
       </p>
     </div>
@@ -268,8 +286,8 @@ const handleTabChange = (tab) => {
   )
 ) : (
   savedLoading ? (
-    <div className="flex min-h-60 items-center justify-center">
-      <p className="text-(--text-secondary)">
+    <div className="flex min-h-60 items-center justify-center px-4">
+      <p className="text-(--text-secondary) text-sm sm:text-base">
         Loading saved posts...
       </p>
     </div>
@@ -295,6 +313,7 @@ const handleTabChange = (tab) => {
 />
   )
 )}
+</div>
 
       {/* Post Modal */}
       {selectedPost && (
