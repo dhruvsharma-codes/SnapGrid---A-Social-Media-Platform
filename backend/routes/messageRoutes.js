@@ -2,7 +2,14 @@ const express = require("express");
 const router = express.Router();
 const messageController = require("../controllers/messageController.js");
 const authMiddleware = require("../middlewares/authMiddleware.js");
+const chatUpload = require("../middlewares/chatUpload");
 
+router.post(
+  "/upload",
+  authMiddleware,
+  chatUpload.single("file"),
+  messageController.uploadAttachment
+);
 
 router.get(
   "/conversations",

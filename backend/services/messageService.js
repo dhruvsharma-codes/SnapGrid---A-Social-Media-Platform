@@ -85,7 +85,7 @@ const getConversationMessages = async (conversationId, currentUserId) => {
   return messages;
 };
 
-const createMessage = async (conversationId, senderId, content) => {
+const createMessage = async (conversationId, senderId, content, attachment={}) => {
   if (!content || !content.trim()) {
     const error = new Error("Message cannot be empty");
     error.statusCode = 400;
@@ -99,7 +99,21 @@ const createMessage = async (conversationId, senderId, content) => {
   const message = await Message.create({
     conversationId: conversation.id,
     senderId,
-    content: content.trim(),
+    content: content.trim() || null,
+    messageType:
+    attachment.messageType || "text",
+
+  attachmentUrl:
+    attachment.attachmentUrl || null,
+
+  attachmentName:
+    attachment.attachmentName || null,
+
+  attachmentMimeType:
+    attachment.attachmentMimeType || null,
+
+  attachmentSize:
+    attachment.attachmentSize || null,
     isRead: false,
   });
   return await Message.findByPk(message.id, {

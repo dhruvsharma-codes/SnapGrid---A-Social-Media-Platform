@@ -72,10 +72,58 @@ const getMyConversations = async (req, res, next) => {
     next(error);
   }
 };
+const uploadAttachment = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select a file",
+      });
+    }
+
+    const isImage =
+      req.file.mimetype.startsWith("image/");
+
+    const messageType = isImage
+      ? "image"
+      : "file";
+
+    const attachmentUrl =
+      `/uploads/chat/${req.file.filename}`;
+
+    return res.status(200).json({
+      success: true,
+
+      message: "File uploaded successfully",
+
+      data: {
+        messageType,
+
+        attachmentUrl,
+
+        attachmentName:
+          req.file.originalname,
+
+        attachmentMimeType:
+          req.file.mimetype,
+
+        attachmentSize:
+          req.file.size,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getOrCreateConversation,
   getConversationMessages,
   createMessage,
-  getMyConversations
+  getMyConversations,
+  uploadAttachment
 };

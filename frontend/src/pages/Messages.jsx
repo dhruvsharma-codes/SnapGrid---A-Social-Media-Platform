@@ -1,10 +1,15 @@
-
 import {
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import {
+  Paperclip,
+  FileText,
+  X,
+  Send,
+} from "lucide-react";
 
 import { io } from "socket.io-client";
 
@@ -13,6 +18,7 @@ import {
   getOrCreateConversation,
   getConversationMessages,
   sendMessage,
+  uploadMessageAttachment
 } from "../services/messageService.js";
 
 import {
@@ -54,6 +60,17 @@ const socket = useSocket();
 
   const [messageText, setMessageText] =
     useState("");
+
+    const [selectedFile, setSelectedFile] =
+  useState(null);
+
+const [filePreview, setFilePreview] =
+  useState(null);
+
+const [uploadingFile, setUploadingFile] =
+  useState(false);
+
+const fileInputRef = useRef(null);
 
   const [loadingList, setLoadingList] =
     useState(true);
@@ -672,77 +689,287 @@ const socket = useSocket();
       }
     };
 
+    // =========================================================
+// SELECT MESSAGE ATTACHMENT
+// =========================================================
+
+const handleFileSelect = (event) => {
+  const file = event.target.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  // 5 MB limit
+  if (file.size > 5 * 1024 * 1024) {
+    setError("File size must be less than 5 MB");
+
+    event.target.value = "";
+
+    return;
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "application/pdf",
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    setError(
+      "Only JPG, PNG, WEBP and PDF files are allowed"
+    );
+
+    event.target.value = "";
+
+    return;
+  }
+
+  setError("");
+
+  setSelectedFile(file);
+
+  // Image preview
+  if (file.type.startsWith("image/")) {
+    const previewUrl =
+      URL.createObjectURL(file);
+
+    setFilePreview(previewUrl);
+  } else {
+    setFilePreview(null);
+  }
+};
+
+// =========================================================
+// REMOVE SELECTED ATTACHMENT
+// =========================================================
+
+const removeSelectedFile = () => {
+  if (filePreview) {
+    URL.revokeObjectURL(filePreview);
+  }
+
+  setSelectedFile(null);
+  setFilePreview(null);
+
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+};
+
   // =========================================================
   // SEND DIRECT MESSAGE
   // =========================================================
 
-  const handleSendDirectMessage =
-    async () => {
-      const content =
-        messageText.trim();
+  // const handleSendDirectMessage =
+  //   async () => {
+  //     const content =
+  //       messageText.trim();
 
-      if (!content) {
-        return;
-      }
+  //     if (!content) {
+  //       return;
+  //     }
 
-      if (!selectedConversation) {
-        return;
-      }
+  //     if (!selectedConversation) {
+  //       return;
+  //     }
 
-      try {
-        setSending(true);
+  //     try {
+  //       setSending(true);
 
-        setError("");
+  //       setError("");
 
-        // Socket preferred
-        if (
-          socketRef.current?.connected
-        ) {
-          socketRef.current.emit(
-            "send_message",
-            {
-              conversationId:
-                selectedConversation.id,
-              content,
-            }
-          );
-        } else {
-          // REST fallback
-          const response =
-            await sendMessage(
-              selectedConversation.id,
-              content
-            );
+  //       // Socket preferred
+  //       if (
+  //         socketRef.current?.connected
+  //       ) {
+  //         socketRef.current.emit(
+  //           "send_message",
+  //           {
+  //             conversationId:
+  //               selectedConversation.id,
+  //             content,
+  //           }
+  //         );
+  //       } else {
+  //         // REST fallback
+  //         const response =
+  //           await sendMessage(
+  //             selectedConversation.id,
+  //             content
+  //           );
 
-          const message =
-            response.data?.message ||
-            response.message;
+  //         const message =
+  //           response.data?.message ||
+  //           response.message;
 
-          if (message) {
-            setMessages(
-              (current) => [
-                ...current,
-                message,
-              ]
-            );
-          }
+  //         if (message) {
+  //           setMessages(
+  //             (current) => [
+  //               ...current,
+  //               message,
+  //             ]
+  //           );
+  //         }
+  //       }
+
+  //       setMessageText("");
+  //     } catch (error) {
+  //       console.error(
+  //         "Send direct message error:",
+  //         error
+  //       );
+
+  //       setError(
+  //         error.message ||
+  //           "Message could not be sent"
+  //       );
+  //     } finally {
+  //       setSending(false);
+  //     }
+  //   };
+
+  // =========================================================
+// SEND DIRECT MESSAGE
+// =========================================================
+
+const handleSendDirectMessage = async () => {
+  const content = messageText.trim();
+
+  if (!content && !selectedFile) {
+    return;
+  }
+
+  if (!selectedConversation) {
+    return;
+  }
+
+  try {
+    setSending(true);
+    setError("");
+
+    let attachmentData = null;
+
+    // -------------------------------------------------------
+    // UPLOAD FILE FIRST
+    // -------------------------------------------------------
+
+    if (selectedFile) {
+      setUploadingFile(true);
+
+      const response =
+        await uploadMessageAttachment(
+          selectedFile
+        );
+
+      attachmentData = response.data;
+
+      setUploadingFile(false);
+    }
+
+    // -------------------------------------------------------
+    // SOCKET MESSAGE
+    // -------------------------------------------------------
+
+    if (socketRef.current?.connected) {
+      socketRef.current.emit(
+        "send_message",
+        {
+          conversationId:
+            selectedConversation.id,
+
+          content: content || null,
+
+          messageType:
+            attachmentData?.messageType ||
+            "text",
+
+          attachmentUrl:
+            attachmentData?.attachmentUrl ||
+            null,
+
+          attachmentName:
+            attachmentData?.attachmentName ||
+            null,
+
+          attachmentMimeType:
+            attachmentData?.attachmentMimeType ||
+            null,
+
+          attachmentSize:
+            attachmentData?.attachmentSize ||
+            null,
         }
+      );
+    } else {
+      // -----------------------------------------------------
+      // REST FALLBACK
+      // -----------------------------------------------------
 
-        setMessageText("");
-      } catch (error) {
-        console.error(
-          "Send direct message error:",
-          error
+      const response =
+        await sendMessage(
+          selectedConversation.id,
+          content,
+          {
+            messageType:
+              attachmentData?.messageType ||
+              "text",
+
+            attachmentUrl:
+              attachmentData?.attachmentUrl ||
+              null,
+
+            attachmentName:
+              attachmentData?.attachmentName ||
+              null,
+
+            attachmentMimeType:
+              attachmentData?.attachmentMimeType ||
+              null,
+
+            attachmentSize:
+              attachmentData?.attachmentSize ||
+              null,
+          }
         );
 
-        setError(
-          error.message ||
-            "Message could not be sent"
-        );
-      } finally {
-        setSending(false);
+      const message =
+        response.data?.message ||
+        response.message;
+
+      if (message) {
+        setMessages((current) => [
+          ...current,
+          message,
+        ]);
       }
-    };
+    }
+
+    // -------------------------------------------------------
+    // RESET
+    // -------------------------------------------------------
+
+    setMessageText("");
+
+    removeSelectedFile();
+
+  } catch (error) {
+    console.error(
+      "Send direct message error:",
+      error
+    );
+
+    setError(
+      error.message ||
+        "Message could not be sent"
+    );
+
+  } finally {
+    setSending(false);
+    setUploadingFile(false);
+  }
+};
 
   // =========================================================
   // SEND GROUP MESSAGE
@@ -1496,7 +1723,7 @@ console.log(
 
                             {/* MESSAGE */}
 
-                            <div
+                            {/* <div
                               className={`rounded-2xl px-4 py-2.5 text-sm ${
                                 isMine
                                   ? "rounded-br-md bg-(--primary) text-white"
@@ -1504,7 +1731,70 @@ console.log(
                               }`}
                             >
                               {message.content}
-                            </div>
+                            </div> */}
+
+                            <div
+  className={`rounded-2xl px-3 py-3 ${
+    isMine
+      ? "rounded-br-md bg-(--primary) text-white"
+      : "rounded-bl-md bg-(--card) text-(--text-primary)"
+  }`}
+>
+  {/* IMAGE */}
+  {message.messageType === "image" &&
+    message.attachmentUrl && (
+      <img
+        src={`http://localhost:5000${message.attachmentUrl}`}
+        alt={
+          message.attachmentName ||
+          "Attached image"
+        }
+        className="max-h-72 max-w-xs rounded-xl object-cover"
+      />
+    )}
+
+  {/* PDF / FILE */}
+  {message.messageType === "file" &&
+    message.attachmentUrl && (
+      <a
+        href={`http://localhost:5000${message.attachmentUrl}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex min-w-60 items-center gap-3 rounded-xl border border-(--border) bg-(--background-secondary) p-3 transition hover:bg-(--card-hover)"
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--primary)/15">
+          <FileText
+            size={22}
+            className="text-(--primary)"
+          />
+        </div>
+
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-white">
+            {message.attachmentName ||
+              "Attached file"}
+          </p>
+
+          <p className="mt-1 text-xs text-(--text-muted)">
+            PDF
+          </p>
+        </div>
+      </a>
+    )}
+
+  {/* TEXT */}
+  {message.content && (
+    <p
+      className={`${
+        message.messageType !== "text"
+          ? "mt-2"
+          : ""
+      } text-sm`}
+    >
+      {message.content}
+    </p>
+  )}
+</div>
 
                             {/* TIME */}
 
@@ -1573,7 +1863,7 @@ console.log(
                 MESSAGE INPUT
             ================================================== */}
 
-            <form
+            {/* <form
               onSubmit={
                 handleSendMessage
               }
@@ -1622,7 +1912,145 @@ console.log(
 
               </div>
 
-            </form>
+            </form> */}
+
+<form
+  onSubmit={handleSendMessage}
+  className="border-t border-(--border) bg-(--background-secondary) p-4"
+>
+  {/* =====================================================
+      SELECTED FILE PREVIEW
+  ====================================================== */}
+
+  {selectedFile && (
+    <div className="mb-3 rounded-xl border border-(--border) bg-(--card) p-3">
+      <div className="flex items-center gap-3">
+
+        {/* IMAGE PREVIEW */}
+
+        {filePreview ? (
+          <img
+            src={filePreview}
+            alt={selectedFile.name}
+            className="h-14 w-14 shrink-0 rounded-lg object-cover"
+          />
+        ) : (
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-(--background-secondary)">
+            <FileText
+              size={24}
+              className="text-(--text-secondary)"
+            />
+          </div>
+        )}
+
+        {/* FILE INFO */}
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-white">
+            {selectedFile.name}
+          </p>
+
+          <p className="mt-1 text-xs text-(--text-muted)">
+            {(selectedFile.size / 1024).toFixed(1)} KB
+          </p>
+
+          {uploadingFile && (
+            <p className="mt-1 text-xs text-(--primary)">
+              Uploading...
+            </p>
+          )}
+        </div>
+
+        {/* REMOVE */}
+
+        <button
+          type="button"
+          onClick={removeSelectedFile}
+          disabled={uploadingFile}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-(--text-muted) transition hover:bg-(--card-hover) hover:text-white disabled:opacity-50"
+        >
+          <X size={17} />
+        </button>
+      </div>
+    </div>
+  )}
+
+  {/* =====================================================
+      INPUT
+  ====================================================== */}
+
+  <div className="flex items-end gap-3">
+
+    {/* HIDDEN FILE INPUT */}
+
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept="image/jpeg,image/png,image/webp,application/pdf"
+      onChange={handleFileSelect}
+      className="hidden"
+    />
+
+    {/* ATTACH BUTTON */}
+
+    <button
+      type="button"
+      onClick={() =>
+        fileInputRef.current?.click()
+      }
+      disabled={sending || uploadingFile}
+      title="Attach image or PDF"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-(--border) bg-(--input) text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      <Paperclip size={20} />
+    </button>
+
+    {/* TEXT INPUT */}
+
+    <textarea
+      value={messageText}
+      onChange={(event) =>
+        setMessageText(
+          event.target.value
+        )
+      }
+      onKeyDown={handleKeyDown}
+      rows={1}
+      maxLength={5000}
+      placeholder={
+        chatType === "group"
+          ? "Message the group..."
+          : "Write a message..."
+      }
+      className="max-h-32 min-h-11 flex-1 resize-none rounded-xl border border-(--border) bg-(--input) px-4 py-3 text-sm text-white outline-none placeholder:text-(--text-muted) focus:border-(--primary)"
+    />
+
+    {/* SEND */}
+
+    <button
+      type="submit"
+      disabled={
+        sending ||
+        uploadingFile ||
+        (
+          !messageText.trim() &&
+          !selectedFile
+        )
+      }
+      className="flex h-11 shrink-0 items-center gap-2 rounded-xl bg-(--primary) px-5 py-3 text-sm font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {sending ? (
+        "..."
+      ) : (
+        <>
+          <Send size={17} />
+          Send
+        </>
+      )}
+    </button>
+
+  </div>
+</form>
 
           </>
 

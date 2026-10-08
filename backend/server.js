@@ -35,10 +35,16 @@ const app = express();
 // Http Server
 const httpServer = http.createServer(app);
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5500",
+  process.env.FRONTEND_URL,
+];
+
 // Socket.io server
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5500"],
+    origin: allowedOrigins,
 
     credentials: true,
   },
@@ -46,12 +52,12 @@ const io = new Server(httpServer, {
 setNotificationIO(io);
 
 // Port
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 // CORS
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5500"],
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
@@ -215,12 +221,23 @@ io.on("connection", (socket) => {
   });
 
   // SEND MESSAGE
-  socket.on("send_message", async ({ conversationId, content }) => {
+  socket.on("send_message", async ({ conversationId, content,  messageType,
+      attachmentUrl,
+      attachmentName,
+      attachmentMimeType,
+      attachmentSize, }) => {
     try {
       const message = await messageService.createMessage(
         conversationId,
         socket.userId,
         content,
+          {
+            messageType,
+            attachmentUrl,
+            attachmentName,
+            attachmentMimeType,
+            attachmentSize,
+          }
       );
 
       const room = `conversation_${conversationId}`;
