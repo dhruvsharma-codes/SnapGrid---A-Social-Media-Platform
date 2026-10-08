@@ -55,6 +55,9 @@ const socket = useSocket();
   const [selectedGroup, setSelectedGroup] =
     useState(null);
 
+    const [mobileChatOpen, setMobileChatOpen] =
+  useState(false);
+
   const [messages, setMessages] =
     useState([]);
 
@@ -264,7 +267,7 @@ const fileInputRef = useRef(null);
     //     },
     //   }
     // );
-    
+
     const socket = io(
   import.meta.env.VITE_API_URL,
   {
@@ -530,140 +533,258 @@ const fileInputRef = useRef(null);
   // OPEN DIRECT CHAT
   // =========================================================
 
-  const openConversation =
-    async (conversation) => {
-      try {
-        setChatType("direct");
+  // const openConversation =
+  //   async (conversation) => {
+  //     try {
+  //       setChatType("direct");
 
-        setSelectedGroup(null);
+  //       setSelectedGroup(null);
 
-        setSelectedConversation(
-          conversation
-        );
+  //       setSelectedConversation(
+  //         conversation
+  //       );
 
-        setMessages([]);
+  //       setMessages([]);
 
-        setLoadingMessages(true);
+  //       setLoadingMessages(true);
 
-        setError("");
+  //       setError("");
 
-        const response =
-          await getConversationMessages(
-            conversation.id
-          );
+  //       const response =
+  //         await getConversationMessages(
+  //           conversation.id
+  //         );
 
-        const oldMessages =
-          response.data?.messages ||
-          response.messages ||
-          [];
+  //       const oldMessages =
+  //         response.data?.messages ||
+  //         response.messages ||
+  //         [];
 
-        setMessages(
-          oldMessages
-        );
+  //       setMessages(
+  //         oldMessages
+  //       );
 
-        // Join socket room
-        if (socketRef.current) {
-          socketRef.current.emit(
-            "join_conversation",
-            {
-              conversationId:
-                conversation.id,
-            }
-          );
+  //       // Join socket room
+  //       if (socketRef.current) {
+  //         socketRef.current.emit(
+  //           "join_conversation",
+  //           {
+  //             conversationId:
+  //               conversation.id,
+  //           }
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error(
+  //         "Open conversation error:",
+  //         error
+  //       );
+
+  //       setError(
+  //         error.message ||
+  //           "Failed to open conversation"
+  //       );
+  //     } finally {
+  //       setLoadingMessages(false);
+  //     }
+  //   };
+
+
+
+  const openConversation = async (conversation) => {
+  try {
+    setChatType("direct");
+
+    setSelectedGroup(null);
+
+    setSelectedConversation(conversation);
+
+    // Mobile par chat screen show karo
+    setMobileChatOpen(true);
+
+    setMessages([]);
+
+    setLoadingMessages(true);
+
+    setError("");
+
+    const response =
+      await getConversationMessages(conversation.id);
+
+    const oldMessages =
+      response.data?.messages ||
+      response.messages ||
+      [];
+
+    setMessages(oldMessages);
+
+    if (socketRef.current?.connected) {
+      socketRef.current.emit(
+        "join_conversation",
+        {
+          conversationId: conversation.id,
         }
-      } catch (error) {
-        console.error(
-          "Open conversation error:",
-          error
-        );
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Open conversation error:",
+      error
+    );
 
-        setError(
-          error.message ||
-            "Failed to open conversation"
-        );
-      } finally {
-        setLoadingMessages(false);
-      }
-    };
+    setError(
+      error.message ||
+        "Failed to open conversation"
+    );
+  } finally {
+    setLoadingMessages(false);
+  }
+};
 
   // =========================================================
   // OPEN GROUP CHAT
   // =========================================================
 
-  const openGroup =
-    async (group) => {
-      try {
-        setChatType("group");
+  // const openGroup =
+  //   async (group) => {
+  //     try {
+  //       setChatType("group");
 
-        setSelectedConversation(
-          null
-        );
+  //       setSelectedConversation(
+  //         null
+  //       );
 
-        setMessages([]);
+  //       setMessages([]);
 
-        setLoadingMessages(true);
+  //       setLoadingMessages(true);
 
-        setError("");
+  //       setError("");
 
-        // Get complete group details
-        const groupResponse =
-          await getGroupDetails(
-            group.id
-          );
+  //       // Get complete group details
+  //       const groupResponse =
+  //         await getGroupDetails(
+  //           group.id
+  //         );
 
-        const completeGroup =
-          groupResponse.data?.group;
+  //       const completeGroup =
+  //         groupResponse.data?.group;
 
-        if (!completeGroup) {
-          throw new Error(
-            "Group details not found"
-          );
+  //       if (!completeGroup) {
+  //         throw new Error(
+  //           "Group details not found"
+  //         );
+  //       }
+
+  //       setSelectedGroup(
+  //         completeGroup
+  //       );
+
+  //       // Load messages
+  //       const messageResponse =
+  //         await getGroupMessages(
+  //           group.id
+  //         );
+
+  //       const oldMessages =
+  //         messageResponse.data
+  //           ?.messages ||
+  //         messageResponse.messages ||
+  //         [];
+
+  //       setMessages(
+  //         oldMessages
+  //       );
+
+  //       // Join socket room
+  //       if (socketRef.current) {
+  //         socketRef.current.emit(
+  //           "join_group",
+  //           {
+  //             groupId:
+  //               group.id,
+  //           }
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error(
+  //         "Open group error:",
+  //         error
+  //       );
+
+  //       setError(
+  //         error.message ||
+  //           "Failed to open group"
+  //       );
+  //     } finally {
+  //       setLoadingMessages(false);
+  //     }
+  //   };
+
+
+
+const openGroup = async (group) => {
+  try {
+    setChatType("group");
+
+    setSelectedConversation(null);
+
+    setMessages([]);
+
+    setLoadingMessages(true);
+
+    setError("");
+
+    // Mobile chat screen open
+    setMobileChatOpen(true);
+
+    const groupResponse =
+      await getGroupDetails(group.id);
+
+    const completeGroup =
+      groupResponse.data?.group;
+
+    if (!completeGroup) {
+      throw new Error(
+        "Group details not found"
+      );
+    }
+
+    setSelectedGroup(completeGroup);
+
+    const messageResponse =
+      await getGroupMessages(group.id);
+
+    const oldMessages =
+      messageResponse.data?.messages ||
+      messageResponse.messages ||
+      [];
+
+    setMessages(oldMessages);
+
+    if (socketRef.current?.connected) {
+      socketRef.current.emit(
+        "join_group",
+        {
+          groupId: group.id,
         }
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Open group error:",
+      error
+    );
 
-        setSelectedGroup(
-          completeGroup
-        );
+    setError(
+      error.message ||
+        "Failed to open group"
+    );
+  } finally {
+    setLoadingMessages(false);
+  }
+};
 
-        // Load messages
-        const messageResponse =
-          await getGroupMessages(
-            group.id
-          );
 
-        const oldMessages =
-          messageResponse.data
-            ?.messages ||
-          messageResponse.messages ||
-          [];
-
-        setMessages(
-          oldMessages
-        );
-
-        // Join socket room
-        if (socketRef.current) {
-          socketRef.current.emit(
-            "join_group",
-            {
-              groupId:
-                group.id,
-            }
-          );
-        }
-      } catch (error) {
-        console.error(
-          "Open group error:",
-          error
-        );
-
-        setError(
-          error.message ||
-            "Failed to open group"
-        );
-      } finally {
-        setLoadingMessages(false);
-      }
-    };
 
   // =========================================================
   // START DIRECT CHAT FROM USER
@@ -1180,13 +1301,14 @@ console.log(
   // =========================================================
 
   return (
-    <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-(--background) text-white">
+    // <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-(--background) text-white">
+    <div className="flex h-[calc(100dvh-64px)] overflow-hidden bg-(--background) text-white">
 
       {/* =====================================================
           LEFT SIDEBAR
       ====================================================== */}
 
-      <aside className="flex w-full max-w-sm flex-col border-r border-(--border) bg-(--background-secondary)">
+      <aside className={`w-full max-w-sm flex-col border-r border-(--border) bg-(--background-secondary) md:flex ${mobileChatOpen ? "hidden" : "flex"}`}>
 
         {/* HEADER */}
 
@@ -1466,7 +1588,7 @@ console.log(
           CHAT AREA
       ====================================================== */}
 
-      <main className="hidden min-w-0 flex-1 flex-col md:flex">
+      <main className={`min-w-0 flex-1 flex-col md:flex  ${mobileChatOpen ? "flex" : "hidden"}`}>
 
         {!selectedConversation &&
         !selectedGroup ? (
@@ -1496,7 +1618,18 @@ console.log(
                 CHAT HEADER
             ================================================== */}
 
-            <header className="flex items-center gap-3 border-b border-(--border) bg-(--background-secondary) p-4">
+            <header className="flex items-center sm:gap-3 gap-2 border-b border-(--border) bg-(--background-secondary) p-3 sm:p-4">
+
+<button
+  type="button"
+  onClick={() => {
+    setMobileChatOpen(false);
+  }}
+  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-white md:hidden"
+  aria-label="Back to chats"
+>
+  ←
+</button>
 
               {chatType === "group" ? (
 
@@ -1655,7 +1788,8 @@ console.log(
                 MESSAGES
             ================================================== */}
 
-            <div className="flex-1 overflow-y-auto p-5">
+            {/* <div className="flex-1 overflow-y-auto p-5"> */}
+            <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-5">
 
               {loadingMessages ? (
 
@@ -1708,7 +1842,7 @@ console.log(
                         >
 
                           <div
-                            className={`max-w-[75%] ${
+                            className={` max-w-[85%] sm:max-w-[75%] ${
                               isMine
                                 ? "items-end"
                                 : "items-start"
@@ -1773,7 +1907,8 @@ console.log(
         href={`${import.meta.env.VITE_API_URL}${message.attachmentUrl}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-w-60 items-center gap-3 rounded-xl border border-(--border) bg-(--background-secondary) p-3 transition hover:bg-(--card-hover)"
+        // className="flex min-w-60 items-center gap-3 rounded-xl border border-(--border) bg-(--background-secondary) p-3 transition hover:bg-(--card-hover)"
+        className="flex w-full max-w-xs items-center gap-3 rounded-xl border border-(--border) bg-(--background-secondary) p-3 transition hover:bg-(--card-hover)"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--primary)/15">
           <FileText
@@ -1929,7 +2064,7 @@ console.log(
 
 <form
   onSubmit={handleSendMessage}
-  className="border-t border-(--border) bg-(--background-secondary) p-4"
+  className="border-t border-(--border) bg-(--background-secondary) sm:p-4 p-2"
 >
   {/* =====================================================
       SELECTED FILE PREVIEW
@@ -1992,7 +2127,7 @@ console.log(
       INPUT
   ====================================================== */}
 
-  <div className="flex items-end gap-3">
+  <div className="flex items-end gap-2 sm:gap-3">
 
     {/* HIDDEN FILE INPUT */}
 
@@ -2050,14 +2185,18 @@ console.log(
           !selectedFile
         )
       }
-      className="flex h-11 shrink-0 items-center gap-2 rounded-xl bg-(--primary) px-5 py-3 text-sm font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
+      // className="flex h-11 shrink-0 items-center gap-2 rounded-xl bg-(--primary) px-5 py-3 text-sm font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-(--primary) text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:gap-2 sm:px-5"
     >
       {sending ? (
         "..."
       ) : (
         <>
           <Send size={17} />
+          <span className="hidden sm:inline" >
+
           Send
+          </span>
         </>
       )}
     </button>
