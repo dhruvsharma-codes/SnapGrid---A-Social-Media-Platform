@@ -1,6 +1,6 @@
 import { Grid3X3 } from "lucide-react";
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
 
 const ProfilePostGrid = ({ posts, onPostClick }) => {
   if (!posts || posts.length === 0) {
@@ -22,7 +22,10 @@ const ProfilePostGrid = ({ posts, onPostClick }) => {
   return (
     <div className="mt-1 grid grid-cols-2 gap-1 md:grid-cols-3">
       {posts.map((post) => {
-        const imageUrl = post.image ? `${API_URL}${post.image}` : null;
+        // const imageUrl = post.image ? `${API_URL}${post.image}` : null;
+        const imageUrl = post.image
+  ? `${import.meta.env.VITE_API_URL}${post.image}`
+  : null;
 
         return (
           <button

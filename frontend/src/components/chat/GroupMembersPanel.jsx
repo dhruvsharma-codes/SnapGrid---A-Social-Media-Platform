@@ -8,7 +8,7 @@ import {
 
 import { searchUsers } from "../../services/userService.js";
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
 
 const GroupMembersPanel = ({
   group,
@@ -84,7 +84,7 @@ const GroupMembersPanel = ({
       return profileImage;
     }
 
-    return `${API_URL}${profileImage}`;
+    return `${import.meta.env.VITE_API_URL}${profileImage}`;
   };
 
   // =====================================================

@@ -273,11 +273,16 @@ useEffect(() => {
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--primary)">
 
                       {searchUser.profileImage ? (
+                        // <img
+                        //   src={`http://localhost:5000${searchUser.profileImage}`}
+                        //   alt={searchUser.username}
+                        //   className="h-full w-full object-cover"
+                        // />
                         <img
-                          src={`http://localhost:5000${searchUser.profileImage}`}
-                          alt={searchUser.username}
-                          className="h-full w-full object-cover"
-                        />
+  src={`${import.meta.env.VITE_API_URL}${searchUser.profileImage}`}
+  alt={searchUser.username}
+  className="h-full w-full object-cover"
+/>
                       ) : (
                         <span className="text-sm font-semibold text-white">
                           {searchUser.fullName

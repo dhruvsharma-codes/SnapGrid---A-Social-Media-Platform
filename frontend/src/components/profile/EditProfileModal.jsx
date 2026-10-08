@@ -3,7 +3,7 @@ import { X, Camera } from "lucide-react";
 
 import { updateProfile } from "../../services/userService.js";
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
 
 const EditProfileModal = ({ user, onClose, onUpdated }) => {
   const fileInputRef = useRef(null);
@@ -15,7 +15,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
   const [image, setImage] = useState(null);
 
   const [preview, setPreview] = useState(
-    user?.profileImage ? `${API_URL}${user.profileImage}` : "",
+    user?.profileImage ? `${import.meta.env.VITE_API_URL}${user.profileImage}` : "",
   );
 
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
     setFullName(user?.fullName || "");
     setBio(user?.bio || "");
 
-    setPreview(user?.profileImage ? `${API_URL}${user.profileImage}` : "");
+    setPreview(user?.profileImage ? `${import.meta.env.VITE_API_URL}${user.profileImage}` : "");
   }, [user]);
 
   const handleImageChange = (event) => {

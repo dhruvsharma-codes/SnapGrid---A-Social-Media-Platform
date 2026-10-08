@@ -4,7 +4,7 @@ import { Heart, MessageCircle, Send, MoreHorizontal } from "lucide-react";
 
 import { toggleLike } from "../../services/likeService.js";
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
 
 const PostCard = ({ post, onPostClick }) => {
   const [liked, setLiked] = useState(post.isLiked || false);
@@ -13,7 +13,10 @@ const PostCard = ({ post, onPostClick }) => {
 
   const [likeLoading, setLikeLoading] = useState(false);
 
-  const imageUrl = post.image ? `${API_URL}${post.image}` : null;
+  // const imageUrl = post.image ? `${API_URL}${post.image}` : null;
+  const imageUrl = post.image
+  ? `${import.meta.env.VITE_API_URL}${post.image}`
+  : null;
 
   const handleLike = async () => {
     if (likeLoading) return;

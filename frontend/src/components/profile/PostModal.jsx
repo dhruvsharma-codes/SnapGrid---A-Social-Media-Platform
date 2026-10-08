@@ -15,7 +15,7 @@ import { toggleLike } from "../../services/likeService.js";
 
 import CommentsModal from "../post/CommentsModal.jsx";
 
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
 
 const PostModal = ({ post, onClose, onLikeUpdated, onCommentUpdated, onPostDeleted, onPostUnsave, }) => {
   const { user: currentUser } = useAuth();
@@ -42,7 +42,7 @@ const [showMenu, setShowMenu] =
 
   if (!post) return null;
 
-  const imageUrl = post.image ? `${API_URL}${post.image}` : null;
+  const imageUrl = post.image ? `${import.meta.env.VITE_API_URL}${post.image}` : null;
 
   const handleLike = async () => {
     if (likeLoading) return;
