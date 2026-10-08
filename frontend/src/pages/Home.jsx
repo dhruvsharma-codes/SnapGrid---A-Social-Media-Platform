@@ -223,16 +223,16 @@ const handleDeletePost = async (postId) => {
   return (
     <>
 {/* <div className="mx-auto grid h-[calc(100vh-80px)] w-full max-w-5xl grid-cols-1 gap-6 lg:grid-cols-[640px_320px]">    */}
-<div className="mx-auto grid h-[calc(100vh-80px)] w-full max-w-6xl grid-cols-[minmax(0,1fr)_300px] gap-8">
+<div className="mx-auto grid min-h-[calc(100vh-80px)] w-full max-w-6xl grid-cols-1 gap-4 lg:h-[calc(100vh-80px)] lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-8">
 
      {/* <div className="w-full min-w-0 overflow-y-auto pr-2"> */}
      {/* <div className="w-full posts-scroll  max-w-115 overflow-y-auto pr-2"> */}
-       <div className="posts-scroll min-w-0 overflow-y-auto pr-2">
+       <div className="posts-scroll min-w-0 overflow-y-auto lg:pr-2">
     <div className="mx-auto w-full max-w-120">
 
         {/* ================= HEADER ================= */}
-        <div className="mb-5">
-          <p className="mt-1 text-xs text-(--text-secondary)">
+        <div className="sm:mb-5 mb-4">
+          <p className="mt-1 text-xs text-(--text-secondary) sm:text-sm">
             Latest posts from SnapGrid
           </p>
         </div>
@@ -249,11 +249,11 @@ const handleDeletePost = async (postId) => {
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="overflow-hidden rounded-lg border border-(--border) bg-(--card)"
+                  className="overflow-hidden rounded-lg border border-(--border) bg-(--card) sm:rounded-2xl"
                 >
                   {/* ================= USER HEADER ================= */}
                   {/* <div className="flex items-center gap-3 px-3 py-3"> */}
-                  <div className="flex items-center justify-between px-3 py-3">
+                  <div className="flex items-center min-w-0 gap-2 sm:px-4 justify-between px-3 py-3">
                     {/* Avatar */}
 
                     {/* <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-(--primary)">
@@ -287,7 +287,7 @@ const handleDeletePost = async (postId) => {
 
                     <div className="flex min-w-0 items-center gap-3">
 
-  <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-(--primary)">
+  <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-(--primary) sm:h-10 sm:w-10">
     {post.user?.profileImage ? (
       <img
         src={`${API_URL}${post.user.profileImage}`}
@@ -328,7 +328,21 @@ const handleDeletePost = async (postId) => {
           : post.id
       )
     }
-    className="rounded-full p-2 text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-white"
+    // className="rounded-full p-2 text-(--text-secondary) transition hover:bg-(--card-hover) hover:text-white"
+    className="
+  flex
+  h-9
+  w-9
+  shrink-0
+  items-center
+  justify-center
+  rounded-full
+  text-(--text-secondary)
+  transition
+  hover:bg-(--card-hover)
+  hover:text-white
+  active:scale-95
+"
   >
     <MoreVertical size={19} />
   </button>
@@ -343,7 +357,7 @@ const handleDeletePost = async (postId) => {
           handleLike(post);
           setOpenMenu(null);
         }}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover)"
+        className="flex min-h-11 w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-(--card-hover)"
       >
         <Heart
           size={17}
@@ -446,26 +460,44 @@ const handleDeletePost = async (postId) => {
                     <div className="bg-black">
                       <img
                         src={`${API_URL}${post.image}`}
+                        loading="lazy"
                         alt="Post"
-                        className="max-h-[500px] w-full object-cover"
+                        className="max-h-[600px] max-h-[70vh] w-full bg-black object-contain"
                       />
                     </div>
                   )}
 
                   {/* ================= POST CONTENT ================= */}
 
-                  <div className="px-3 py-3">
+                  <div className="px-3 py-3 sm:px-4">
                     {/* ================= ACTIONS ================= */}
 
-                    <div className="mb-2 flex items-center gap-4">
+                    <div className="mb-2 flex items-center gap-4 sm:gap-5">
                       {/* LIKE */}
 
-                      <button
+                      {/* <button
                         type="button"
                         disabled={likeLoading === post.id}
                         onClick={() => handleLike(post)}
                         className="flex items-center gap-1.5 transition hover:opacity-80 disabled:opacity-50"
-                      >
+                      > */}
+
+                      <button
+  type="button"
+  disabled={likeLoading === post.id}
+  onClick={() => handleLike(post)}
+  className="
+    flex
+    min-h-10
+    items-center
+    gap-1.5
+    rounded-lg
+    px-1
+    transition
+    hover:bg-(--card-hover)
+    disabled:opacity-50
+  "
+>
                         <Heart
                           size={20}
                           className={
@@ -482,11 +514,28 @@ const handleDeletePost = async (postId) => {
 
                       {/* COMMENT */}
 
-                      <button
+                      {/* <button
                         type="button"
                         onClick={() => setCommentPost(post)}
                         className="flex items-center gap-1.5 text-white transition hover:opacity-80"
-                      >
+                      > */}
+
+
+                      <button
+  type="button"
+  onClick={() => setCommentPost(post)}
+  className="
+    flex
+    min-h-10
+    items-center
+    gap-1.5
+    rounded-lg
+    px-1
+    text-white
+    transition
+    hover:bg-(--card-hover)
+  "
+>
                         <MessageCircle size={19} />
 
                         <span className="text-xs">
@@ -496,18 +545,35 @@ const handleDeletePost = async (postId) => {
 
                       {/* SHARE */}
 
-                      <button
+                      {/* <button
                         type="button"
                         className="text-white transition hover:opacity-80"
                       >
                         <Send size={18} />
-                      </button>
+                      </button> */}
+
+                      <button
+  type="button"
+  className="
+    flex
+    h-10
+    w-10
+    items-center
+    justify-center
+    rounded-full
+    text-white
+    transition
+    hover:bg-(--card-hover)
+  "
+>
+  <Send size={18} />
+</button>
                     </div>
 
                     {/* ================= CAPTION ================= */}
 
                     {post.caption && (
-                      <p className="text-sm leading-5 text-(--text-primary)">
+                      <p className="text-sm wrap-break-word leading-5 text-(--text-primary)">
                         <span className="mr-2 font-semibold">
                           {post.user?.username}
                         </span>
@@ -518,7 +584,7 @@ const handleDeletePost = async (postId) => {
 
                     {/* ================= DATE ================= */}
 
-                    <p className="mt-2 text-[10px] text-(--text-muted)">
+                    <p className="mt-2 text-[10px] text-(--text-muted) wrap-break-word">
                       {new Date(post.createdAt).toLocaleString()}
                     </p>
                   </div>
@@ -529,16 +595,45 @@ const handleDeletePost = async (postId) => {
             {/* ================= LOAD MORE ================= */}
 
             {pagination?.hasNextPage && (
-              <div className="flex justify-center py-6">
-                <button
-                  type="button"
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="rounded-lg border border-(--border) bg-(--card) px-5 py-2 text-xs font-medium text-white transition hover:bg-(--card-hover) disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {loadingMore ? "Loading..." : "Load More"}
-                </button>
-              </div>
+              // <div className="flex justify-center py-6">
+              //   <button
+              //     type="button"
+              //     onClick={handleLoadMore}
+              //     disabled={loadingMore}
+              //     className="rounded-lg border border-(--border) bg-(--card) px-5 py-2 text-xs font-medium text-white transition hover:bg-(--card-hover) disabled:cursor-not-allowed disabled:opacity-50"
+              //   >
+              //     {loadingMore ? "Loading..." : "Load More"}
+              //   </button>
+              // </div>
+
+              <div className="flex justify-center px-4 py-5 sm:py-6">
+  <button
+    type="button"
+    onClick={handleLoadMore}
+    disabled={loadingMore}
+    className="
+      min-h-10
+      rounded-lg
+      border
+      border-(--border)
+      bg-(--card)
+      px-5
+      py-2
+      text-xs
+      font-medium
+      text-white
+      transition
+      hover:bg-(--card-hover)
+      active:scale-95
+      disabled:cursor-not-allowed
+      disabled:opacity-50
+    "
+  >
+    {loadingMore
+      ? "Loading..."
+      : "Load More"}
+  </button>
+</div>
             )}
 
             {/* ================= ALL POSTS LOADED ================= */}
@@ -554,7 +649,7 @@ const handleDeletePost = async (postId) => {
       </div>
        {/* ================= SUGGESTED USERS ================= */}
       <aside className="hidden lg:block">
-        <div className="sticky top-6">
+        <div className="sticky top-20">
 
         <SuggestedUsers />
         </div>
