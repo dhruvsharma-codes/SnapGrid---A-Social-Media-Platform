@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { io } from "socket.io-client";
+import { useLocation } from "react-router-dom";
 
 import {
   getMyConversations,
@@ -38,7 +39,10 @@ const Messages = () => {
   // =========================================================
   // STATE
   // =========================================================
-  
+   const location = useLocation();
+
+  const targetUserId = location.state?.userId;
+
 const socket = useSocket();
   const [chatType, setChatType] =
     useState("direct");
@@ -820,6 +824,21 @@ const openGroup = async (group) => {
         );
       }
     };
+
+    const handledNavigationRef = useRef(null);
+
+useEffect(() => {
+  if (!targetUserId) return;
+
+  // Same navigation ko baar-baar process mat karo
+  if (handledNavigationRef.current === location.key) {
+    return;
+  }
+
+  handledNavigationRef.current = location.key;
+
+  startDirectChat(targetUserId);
+}, [targetUserId, location.key]);
 
     // =========================================================
 // SELECT MESSAGE ATTACHMENT
