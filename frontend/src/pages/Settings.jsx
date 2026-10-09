@@ -23,6 +23,7 @@ import {
   Hash,
   EyeOff,
   Eye,
+  LogOut
 
 } from "lucide-react";
 import {
@@ -34,10 +35,11 @@ import { changePassword } from "../services/authService.js";
 import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
+
   const navigate = useNavigate();
   const [activeSection, setActiveSection] =
     useState("edit-profile");
-    const { user: loggedInUser, setUser } = useAuth();
+    const { user: loggedInUser, setUser, Logout } = useAuth();
 
 const [profile, setProfile] = useState(null);
 const [showEditProfile, setShowEditProfile] =
@@ -1353,10 +1355,23 @@ const renderProfileDetails = () => {
                           }`}
                         />
                       </button>
+
+
+
                     );
                   })}
 
                 </div>
+
+                {/* LOGOUT */}
+                <button
+  type="button"
+  onClick={Logout}
+  className="mt-2 flex min-h-11 w-full items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-400 transition hover:bg-red-500/20 md:hidden"
+>
+  <LogOut size={17} />
+  <span>Logout</span>
+</button>
               </div>
             </aside>
 
