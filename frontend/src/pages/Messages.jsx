@@ -2531,7 +2531,7 @@ const MessageBubble = memo(function MessageBubble({
                 message.messageType && message.messageType !== "text"
                   ? "mt-2"
                   : ""
-              } whitespace-pre-wrap break-words text-sm`}
+              } whitespace-pre-wrap wrap-break-word text-sm`}
             >
               {message.content}
             </p>
