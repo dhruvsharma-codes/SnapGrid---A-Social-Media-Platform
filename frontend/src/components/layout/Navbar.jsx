@@ -1,5 +1,7 @@
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/SocketContext";
+import { Sun, Moon } from "lucide-react";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 import {
   Link,
@@ -46,6 +48,8 @@ const getInitials = (fullName) => {
 const Navbar = () => {
   const { user } = useAuth();
   const socket = useSocket();
+  const { theme, toggleTheme } = useTheme();
+const isDark = theme === "dark";
 
   const navigate = useNavigate();
 
@@ -348,6 +352,18 @@ useEffect(() => {
             )}
 
           </Link>
+
+          
+<button
+  type="button"
+  onClick={toggleTheme}
+  aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+  title={`Switch to ${isDark ? "light" : "dark"} mode`}
+  className="flex h-10 w-10 items-center justify-center rounded-xl border border-(--border) bg-(--card) text-(--text-primary) transition hover:bg-(--card-hover) active:scale-95"
+>
+  {isDark ? <Sun size={20} /> : <Moon size={20} />}
+</button>
+
 
 
           {/* Messages */}

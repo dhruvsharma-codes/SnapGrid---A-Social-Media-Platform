@@ -8,6 +8,7 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -16,7 +17,7 @@ createRoot(document.getElementById("root")).render(
         import.meta.env.VITE_GOOGLE_CLIENT_ID
       }
     > */}
-
+<ThemeProvider>
     <BrowserRouter>
       <AuthProvider>
         <SocketProvider>
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")).render(
         </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
+</ThemeProvider>
     {/* </GoogleOAuthProvider> */}
     
   </StrictMode>,
