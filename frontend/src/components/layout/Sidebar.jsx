@@ -1359,7 +1359,7 @@ const assetUrl = (path) => {
 // module-level: these used to be rebuilt on every render
 const NAV_ITEMS = [
   { name: "Home", path: "/", icon: Home },
-  { name: "Reels", path: "/explore", icon: Compass },
+  // { name: "Reels", path: "/explore", icon: Compass },
   { name: "Search", path: "/search", icon: Search },
   { name: "Notifications", path: "/notifications", icon: Bell },
   { name: "Messages", path: "/messages", icon: MessageCircle },
@@ -1368,7 +1368,7 @@ const NAV_ITEMS = [
 const MOBILE_NAV_ITEMS = [
   { name: "Home", path: "/", icon: Home },
   { name: "Search", path: "/search", icon: Search },
-  { name: "Reels", path: "/explore", icon: Compass },
+  // { name: "Reels", path: "/explore", icon: Compass },
   { name: "Messages", path: "/messages", icon: MessageCircle },
 ];
 
