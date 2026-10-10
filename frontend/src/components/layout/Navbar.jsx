@@ -1,7 +1,7 @@
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/SocketContext";
 import { Sun, Moon } from "lucide-react";
-import { useTheme } from "../context/ThemeContext.jsx";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 import {
   Link,
