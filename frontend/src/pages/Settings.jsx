@@ -1933,6 +1933,11 @@ const SavedSection = () => {
     (async () => {
       try {
         const response = await getSavedPosts();
+        console.log("Saved Posts API Response:", response);
+console.log(
+  "First Saved Post:",
+  response?.data?.posts?.[0]?.post
+);
         if (!cancelled) setSavedPosts(response?.data?.posts || []);
       } catch (err) {
         console.error("Settings Saved Posts Error:", err);
