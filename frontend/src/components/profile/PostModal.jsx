@@ -1206,8 +1206,13 @@ const PostModal = ({
 }) => {
   const { user: currentUser } = useAuth();
 
-  const [liked, setLiked] = useState(!!post?.isLiked);
-  const [likeCount, setLikeCount] = useState(post?.likeCount || 0);
+  // const [liked, setLiked] = useState(!!post?.isLiked);
+  // const [likeCount, setLikeCount] = useState(post?.likeCount || 0);
+  const [liked, setLiked] = useState(Boolean(post?.isLiked));
+
+const [likeCount, setLikeCount] = useState(
+  Number(post?.likeCount ?? post?.likesCount ?? post?.likes?.length ?? 0)
+);
   const [commentCount, setCommentCount] = useState(post?.commentCount || 0);
   const [isSaved, setIsSaved] = useState(!!post?.isSaved);
 
