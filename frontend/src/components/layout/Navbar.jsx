@@ -653,14 +653,29 @@ const Navbar = () => {
     <nav className="fixed left-0 right-0 top-0 z-50 h-16 border-b border-(--border) bg-(--background-secondary)/95 backdrop-blur-md">
       <div className="flex h-full items-center justify-between gap-2 px-3 sm:px-4 md:px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
+        {/* <Link to="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-(--primary)">
             <span className="text-lg font-bold text-white">S</span>
           </div>
           <span className="hidden text-xl font-bold text-white sm:block">
             SnapGrid
           </span>
-        </Link>
+        </Link> */}
+
+        
+{/* SnapGrid Logo */}
+<Link
+  to="/"
+  aria-label="SnapGrid Home"
+  className="flex shrink-0 items-center gap-2"
+>
+  <img
+    src="/snapgrid-logo.png"
+    alt="SnapGrid"
+    className="h-10 w-auto max-w-[145px] object-contain"
+  />
+</Link>
+
 
         {/* Search (tablet+) */}
         <div ref={searchBoxRef} className="relative hidden w-64 md:flex">

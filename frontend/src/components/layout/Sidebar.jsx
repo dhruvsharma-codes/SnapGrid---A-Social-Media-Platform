@@ -1336,7 +1336,6 @@ import { memo, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
   Bell,
-  Compass,
   Home,
   LogOut,
   MessageCircle,
