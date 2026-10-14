@@ -50,6 +50,9 @@ const io = new Server(httpServer, {
   },
 });
 setNotificationIO(io);
+setNotificationIO(io);
+setNotificationIO(io);
+setNotificationIO(io);
 
 // Port
 const PORT = process.env.PORT || 5000;
