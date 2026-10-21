@@ -9,5 +9,16 @@ router.get(
   authMiddleware,
   notificationController.getUnreadNotificationCount,
 );
+router.patch(
+  "/read-all",
+  protect,
+  notificationController.markAllNotificationsAsRead
+);
+router.patch(
+  "/:notificationId/read",
+  protect,
+  notificationController.markNotificationAsRead
+);
+
 
 module.exports = router;
